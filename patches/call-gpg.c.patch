@@ -1,0 +1,54 @@
+diff --git a/common/call-gpg.c b/common/call-gpg.c
+index a4723ca..b7ebf9f 100644
+--- a/common/call-gpg.c
++++ b/common/call-gpg.c
+@@ -415,8 +415,10 @@ _gpg_encrypt (ctrl_t ctrl,
+   assuan_context_t ctx = NULL;
+   int outbound_fds[2] = { -1, -1 };
+   int inbound_fds[2]  = { -1, -1 };
+-  npth_t writer_thread = (npth_t)0;
+-  npth_t reader_thread = (npth_t)0;
++  npth_t writer_thread ;
++  writer_thread.__ = 0;
++  npth_t reader_thread ;
++  reader_thread.__ = 0;
+   gpg_error_t writer_err, reader_err;
+   char line[ASSUAN_LINELENGTH];
+   strlist_t sl;
+@@ -516,9 +518,9 @@ _gpg_encrypt (ctrl_t ctrl,
+ 
+  leave:
+   /* FIXME: Not valid, as npth_t is an opaque type.  */
+-  if (reader_thread)
++  if (reader_thread.__)
+     npth_detach (reader_thread);
+-  if (writer_thread)
++  if (writer_thread.__)
+     npth_detach (writer_thread);
+   if (outbound_fds[0] != -1)
+     close (outbound_fds[0]);
+@@ -601,8 +603,10 @@ _gpg_decrypt (ctrl_t ctrl,
+   assuan_context_t ctx = NULL;
+   int outbound_fds[2] = { -1, -1 };
+   int inbound_fds[2]  = { -1, -1 };
+-  npth_t writer_thread = (npth_t)0;
+-  npth_t reader_thread = (npth_t)0;
++  npth_t writer_thread;
++  writer_thread.__ = 0;
++  npth_t reader_thread;
++  reader_thread.__  = 0;
+   gpg_error_t writer_err, reader_err;
+   int ret;
+ 
+@@ -686,9 +690,9 @@ _gpg_decrypt (ctrl_t ctrl,
+     }
+ 
+  leave:
+-  if (reader_thread)
++  if (reader_thread.__)
+     npth_detach (reader_thread);
+-  if (writer_thread)
++  if (writer_thread.__)
+     npth_detach (writer_thread);
+   if (outbound_fds[0] != -1)
+     close (outbound_fds[0]);
