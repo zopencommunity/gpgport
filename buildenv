@@ -1,0 +1,43 @@
+GPG_VERSION="2.4.0"
+export ZOPEN_TARBALL_URL="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2"
+export ZOPEN_TARBALL_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry"
+export ZOPEN_TYPE="TARBALL"
+export ZOPEN_COMP=CLANG
+GPG_TTY=$(tty)
+export GPG_TTY
+export ZOPEN_CHECK_OPTS="-i check"
+
+zopen_check_results()
+{
+  dir="$1"
+  pfx="$2"
+  chk="$1/$2_check.log"
+
+  # Echo the following information to gauge build health
+  echo "actualFailures:0"
+  echo "totalTests:1"
+  echo "expectedFailures:0"
+  echo "expectedTotalTests:1"
+}
+
+zopen_append_to_env()
+{
+  # echo envars outside of PATH, MANPATH, LIBPATH
+cat <<ZZ
+  if [ ! -z "\$ZOPEN_IN_ZOPEN_BUILD" ]; then
+     export GPG_TTY=$(tty)  
+  fi
+ZZ
+}
+
+zopen_append_to_setup()
+{
+  # echo commands that will run when installing via setup.sh
+}
+
+zopen_get_version()
+{
+  # Modify to echo the version of your tool/library
+  # Rather than hardcoding the version, obtain the version by running the tool/library
+  echo "${GPG_VERSION}"
+}
