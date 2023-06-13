@@ -34,6 +34,7 @@ ZZ
 zopen_append_to_setup()
 {
   # echo commands that will run when installing via setup.sh
+   echo "test del"
   echo "GPG_CONF_HOME=\"$HOME/.gnupg\""
   echo "mkdir \$GPG_CONF_HOME" 
 echo "cat > $HOME/.gnupg/gpg-agent.conf <<EOF
