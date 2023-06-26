@@ -1,0 +1,32 @@
+diff --git a/dirmngr/dns-stuff.c b/dirmngr/dns-stuff.c
+index 0edbc04..0d0b1ed 100644
+--- a/dirmngr/dns-stuff.c
++++ b/dirmngr/dns-stuff.c
+@@ -117,6 +117,10 @@
+ 
+ #define RESOLV_CONF_NAME "/etc/resolv.conf"
+ 
++#if defined (__MVS__) && !defined(NI_MAXHOST
++#define NI_MAXHOST 1025
++#endif
++
+ /* Two flags to enable verbose and debug mode.  */
+ static int opt_verbose;
+ static int opt_debug;
+@@ -643,8 +647,14 @@ libdns_init (ctrl_t ctrl)
+     log_debug ("dns: libdns initialized%s\n", tor_mode?" (tor mode)":"");
+ 
+  leave:
+-  if (!fname)
+-    fname = cfgstr;
++   #ifdef __MVS__
++        fname = cfgstr;
++   #else
++     if (!fname)
++     {
++        fname = cfgstr;
++     }
++   #endif
+   if (err && fname)
+     dirmngr_status_printf (ctrl, "WARNING",
+                            "dns_config_problem %u"

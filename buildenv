@@ -1,12 +1,13 @@
 GPG_VERSION="2.4.0"
 export ZOPEN_TARBALL_URL="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2"
-export ZOPEN_TARBALL_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses"
+export ZOPEN_TARBALL_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses ntbtls"
 export ZOPEN_TYPE="TARBALL"
 export ZOPEN_COMP=CLANG
 GPG_TTY=$(tty)
 export GPG_TTY
 export ZOPEN_CHECK_OPTS="-i check"
 export ZOPEN_RUNTIME_DEPS="pinentry" 
+export ZOPEN_EXTRA_CPPFLAGS="-D_POSIX_REALTIME_SIGNALS"
 
 zopen_check_results()
 {
@@ -39,6 +40,12 @@ zopen_append_to_setup()
 echo "cat > $HOME/.gnupg/gpg-agent.conf <<EOF
 pinentry-program $PINENTRY_HOME/bin/pinentry-tty
 log-file \$GPG_CONF_HOME/gpg-agent.log
+EOF"
+
+echo "cat > $HOME/.gnupg/dirmngr.conf <<EOF
+standard-resolver
+no-use-tor
+nameserver 1.1.1.1
 EOF"
 }
 
