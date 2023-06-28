@@ -1,0 +1,21 @@
+diff --git a/dirmngr/dns-stuff.c b/dirmngr/dns-stuff.c
+index 0edbc04..aa9f66c 100644
+--- a/dirmngr/dns-stuff.c
++++ b/dirmngr/dns-stuff.c
+@@ -643,8 +643,14 @@ libdns_init (ctrl_t ctrl)
+     log_debug ("dns: libdns initialized%s\n", tor_mode?" (tor mode)":"");
+ 
+  leave:
+-  if (!fname)
+-    fname = cfgstr;
++   #ifdef __MVS__
++        fname = cfgstr;
++   #else
++     if (!fname)
++     {
++        fname = cfgstr;
++     }
++   #endif
+   if (err && fname)
+     dirmngr_status_printf (ctrl, "WARNING",
+                            "dns_config_problem %u"
