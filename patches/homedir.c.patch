@@ -1,16 +1,8 @@
 diff --git a/common/homedir.c b/common/homedir.c
-index 67bbde8..a74c463 100644
+index 67bbde8..372ba2c 100644
 --- a/common/homedir.c
 +++ b/common/homedir.c
-@@ -64,6 +64,7 @@
- #include "i18n.h"
- #include "zb32.h"
- 
-+static char *procNam = NULL;
- /* The name of the symbolic link to the file from which the process
-  * text was read.  */
- #if __linux__
-@@ -440,6 +441,63 @@ w32_rootdir (void)
+@@ -440,6 +440,63 @@ w32_rootdir (void)
  
  
  #ifndef HAVE_W32_SYSTEM /* Unix */
@@ -74,7 +66,7 @@ index 67bbde8..a74c463 100644
  /* Determine the root directory of the gnupg installation on Unix.
   * The standard case is that this function returns NULL so that the
   * root directory as configured at build time is used.  However, it
-@@ -478,7 +536,20 @@ unix_rootdir (int want_sysconfdir)
+@@ -478,7 +535,20 @@ unix_rootdir (int want_sysconfdir)
        for (;;)
          {
            buffer = xmalloc (bufsize+1);
