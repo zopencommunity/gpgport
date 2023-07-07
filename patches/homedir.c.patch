@@ -7,7 +7,6 @@ index 67bbde8..372ba2c 100644
  
  #ifndef HAVE_W32_SYSTEM /* Unix */
 +//__MVS__
-+//TODO: Add to zoslib
 +//
 +#define _OPEN_SYS
 +#include <stdio.h>
