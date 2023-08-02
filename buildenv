@@ -26,6 +26,7 @@ zopen_append_to_env()
 {
   # echo envars outside of PATH, MANPATH, LIBPATH
 cat <<ZZ
+  export GNUPG_BUILDDIR="\${PWD}"
   if [ ! -z "\$ZOPEN_IN_ZOPEN_BUILD" ]; then
      export GPG_TTY=$(tty)  
   fi
