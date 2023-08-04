@@ -1,5 +1,5 @@
 diff --git a/common/homedir.c b/common/homedir.c
-index 67bbde8..866c92d 100644
+index 67bbde8..48414a6 100644
 --- a/common/homedir.c
 +++ b/common/homedir.c
 @@ -324,7 +324,6 @@ default_homedir (void)
@@ -148,7 +148,7 @@ index 67bbde8..866c92d 100644
  #else
        X(bindir, "dirmngr", DIRMNGR_NAME);
  #endif
-@@ -1596,6 +1669,9 @@ gnupg_module_name (int which)
+@@ -1596,7 +1669,11 @@ gnupg_module_name (int which)
        X(libexecdir, "tools", "gpg-check-pattern");
  
      case GNUPG_MODULE_NAME_GPGSM:
@@ -156,9 +156,11 @@ index 67bbde8..866c92d 100644
 +      X(bindir, "bin", "gpgsm");
 +#else
        X(bindir, "sm", "gpgsm");
++#endif
  
      case GNUPG_MODULE_NAME_GPG:
-@@ -1615,12 +1691,23 @@ gnupg_module_name (int which)
+ #if USE_GPG2_HACK
+@@ -1615,13 +1692,25 @@ gnupg_module_name (int which)
          X(bindir, "g10", GPG_NAME "v");
  
      case GNUPG_MODULE_NAME_CONNECT_AGENT:
@@ -180,5 +182,7 @@ index 67bbde8..866c92d 100644
 +      X(bindir, "bin", "gpg-card");
 +#else
        X(bindir, "tools", "gpg-card");
++#endif
  
      default:
+       BUG ();
