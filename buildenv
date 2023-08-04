@@ -14,12 +14,17 @@ zopen_check_results()
   dir="$1"
   pfx="$2"
   chk="$1/$2_check.log"
+  failures=$(egrep "^FAIL:" $chk | wc -l) 
+  skipped=$(egrep "^SKIP:" $chk | wc -l)
+  passed=$(egrep "^PASS:" $chk | wc -l)
+  totalTests=$(($failures+$skipped+$passed))
 
   # Echo the following information to gauge build health
-  echo "actualFailures:0"
-  echo "totalTests:1"
-  echo "expectedFailures:0"
-  echo "expectedTotalTests:1"
+cat <<ZZ
+actualFailures:${failures}
+totalTests:${totalTests}
+expectedFailures:6
+ZZ
 }
 
 zopen_append_to_env()
