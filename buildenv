@@ -1,30 +1,37 @@
 GPG_VERSION="2.4.0"
 export ZOPEN_TARBALL_URL="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2"
-export ZOPEN_TARBALL_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses"
+export ZOPEN_TARBALL_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses ntbtls"
 export ZOPEN_TYPE="TARBALL"
 export ZOPEN_COMP=CLANG
 GPG_TTY=$(tty)
 export GPG_TTY
 export ZOPEN_CHECK_OPTS="-i check"
 export ZOPEN_RUNTIME_DEPS="pinentry" 
+export ZOPEN_EXTRA_CPPFLAGS="-D_POSIX_REALTIME_SIGNALS"
 
 zopen_check_results()
 {
   dir="$1"
   pfx="$2"
   chk="$1/$2_check.log"
+  failures=$(egrep "^FAIL:" $chk | wc -l) 
+  skipped=$(egrep "^SKIP:" $chk | wc -l)
+  passed=$(egrep "^PASS:" $chk | wc -l)
+  totalTests=$(($failures+$skipped+$passed))
 
   # Echo the following information to gauge build health
-  echo "actualFailures:0"
-  echo "totalTests:1"
-  echo "expectedFailures:0"
-  echo "expectedTotalTests:1"
+cat <<ZZ
+actualFailures:${failures}
+totalTests:${totalTests}
+expectedFailures:6
+ZZ
 }
 
 zopen_append_to_env()
 {
   # echo envars outside of PATH, MANPATH, LIBPATH
 cat <<ZZ
+  export GNUPG_BUILDDIR="\${PWD}"
   if [ ! -z "\$ZOPEN_IN_ZOPEN_BUILD" ]; then
      export GPG_TTY=$(tty)  
   fi
@@ -34,11 +41,17 @@ ZZ
 zopen_append_to_setup()
 {
   # echo commands that will run when installing via setup.sh
-  echo "GPG_CONF_HOME=\"$HOME/.gnupg\""
-  echo "mkdir \$GPG_CONF_HOME" 
-echo "cat > $HOME/.gnupg/gpg-agent.conf <<EOF
-pinentry-program $PINENTRY_HOME/bin/pinentry-tty
+  echo "GPG_CONF_HOME=\"\$HOME/.gnupg\""
+  echo "mkdir -p \$GPG_CONF_HOME" 
+echo "cat > \$HOME/.gnupg/gpg-agent.conf <<EOF
+pinentry-program \$PINENTRY_HOME/bin/pinentry-tty
 log-file \$GPG_CONF_HOME/gpg-agent.log
+EOF"
+
+echo "cat > \$HOME/.gnupg/dirmngr.conf <<EOF
+standard-resolver
+no-use-tor
+nameserver 1.1.1.1
 EOF"
 }
 

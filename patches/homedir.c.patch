@@ -1,0 +1,188 @@
+diff --git a/common/homedir.c b/common/homedir.c
+index 67bbde8..48414a6 100644
+--- a/common/homedir.c
++++ b/common/homedir.c
+@@ -324,7 +324,6 @@ default_homedir (void)
+       dir = saved_dir;
+     }
+ #endif /*HAVE_W32_SYSTEM*/
+-
+   if (!dir || !*dir)
+     dir = GNUPG_DEFAULT_HOMEDIR;
+   else
+@@ -349,7 +348,6 @@ default_homedir (void)
+       if (!is_gnupg_default_homedir (dir))
+         non_default_homedir = 1;
+     }
+-
+   return dir;
+ }
+ 
+@@ -440,6 +438,63 @@ w32_rootdir (void)
+ 
+ 
+ #ifndef HAVE_W32_SYSTEM /* Unix */
++//__MVS__
++//
++#define _OPEN_SYS
++#include <stdio.h>
++#include <sys/ps.h>
++#include <sys/types.h>
++#include <pwd.h>
++#include <time.h>
++#include <string.h>
++#include <limits.h>
++#include <errno.h>
++
++char *readProcessPath()
++{
++ int token;
++  W_PSPROC buf;
++  struct passwd *pw;
++ char *parent;
++ parent = malloc(PATH_MAX);
++ memset( parent, 0, PATH_MAX);
++  token = 0;
++
++  memset(&buf, 0x00, sizeof(buf));
++  buf.ps_pathptr   = (char *) malloc(buf.ps_pathlen   = PS_PATHBLEN);
++  if (buf.ps_pathptr   == NULL)
++    perror("buffer allocation error");
++  else do {
++    if ((token = w_getpsent(token, &buf, sizeof(buf))) == -1)
++      perror("w_getpsent() error");
++    else if (token > 0)
++    {
++      if ((pw = getpwuid(buf.ps_ruid)) == NULL)
++        perror("getpwuid() error");
++      else
++      {
++         printf("token %d: pid %10d, user %8s, started %s", token,
++               (int) buf.ps_pid, pw->pw_name,
++               ctime(&buf.ps_starttime));
++         pid_t mypid = getpid();
++         if (buf.ps_pid == mypid)
++         {
++            char *res = realpath(buf.ps_pathptr, parent);
++            if (res)
++            {
++                return parent;
++            }
++            else {
++                perror("realpath() error");
++           }
++           break;
++         }
++      }
++    }
++  } while (token > 0);
++
++  return "";
++}
+ /* Determine the root directory of the gnupg installation on Unix.
+  * The standard case is that this function returns NULL so that the
+  * root directory as configured at build time is used.  However, it
+@@ -478,7 +533,20 @@ unix_rootdir (int want_sysconfdir)
+       for (;;)
+         {
+           buffer = xmalloc (bufsize+1);
+-          nread = readlink (MYPROC_SELF_EXE, buffer, bufsize);
++          #ifdef __MVS__
++                char *str;
++                if( (str = readProcessPath()) != NULL) {
++		    nread = readlink (str, buffer, bufsize);
++		}
++		else
++		{
++	         	nread =-1;
++		}
++                free(str);
++          #else
++                nread = readlink (MYPROC_SELF_EXE, buffer, bufsize);
++          #endif
++
+           if (nread < 0)
+             {
+               err = gpg_error_from_syserror ();
+@@ -1174,7 +1242,6 @@ gnupg_socketdir (void)
+       name = _gnupg_socketdir_internal (0, &dummy);
+       gpgrt_annotate_leaked_object (name);
+     }
+-
+   return name;
+ }
+ 
+@@ -1467,7 +1534,6 @@ get_default_pinentry_name (int reset)
+       if (name)
+         gpgrt_annotate_leaked_object (name);
+     }
+-
+   return name;
+ }
+ 
+@@ -1505,6 +1571,9 @@ gnupg_set_builddir (const char *newdir)
+ static void
+ gnupg_set_builddir_from_env (void)
+ {
++#ifdef __MVS__
++  gnupg_build_directory = getenv ("GNUPG_BUILDDIR");
++#endif
+ #if defined(IS_DEVELOPMENT_VERSION) || defined(ENABLE_GNUPG_BUILDDIR_ENVVAR)
+   if (gnupg_build_directory)
+     return;
+@@ -1539,6 +1608,8 @@ gnupg_module_name (int which)
+     case GNUPG_MODULE_NAME_AGENT:
+ #ifdef GNUPG_DEFAULT_AGENT
+       return GNUPG_DEFAULT_AGENT;
++#elif defined (__MVS__)
++      X(bindir, "bin", "gpg-agent");
+ #else
+       X(bindir, "agent", "gpg-agent");
+ #endif
+@@ -1567,6 +1638,8 @@ gnupg_module_name (int which)
+     case GNUPG_MODULE_NAME_DIRMNGR:
+ #ifdef GNUPG_DEFAULT_DIRMNGR
+       return GNUPG_DEFAULT_DIRMNGR;
++#elif defined (__MVS__)
++      X(bindir, "bin", DIRMNGR_NAME);
+ #else
+       X(bindir, "dirmngr", DIRMNGR_NAME);
+ #endif
+@@ -1596,7 +1669,11 @@ gnupg_module_name (int which)
+       X(libexecdir, "tools", "gpg-check-pattern");
+ 
+     case GNUPG_MODULE_NAME_GPGSM:
++#ifdef __MVS__
++      X(bindir, "bin", "gpgsm");
++#else
+       X(bindir, "sm", "gpgsm");
++#endif
+ 
+     case GNUPG_MODULE_NAME_GPG:
+ #if USE_GPG2_HACK
+@@ -1615,13 +1692,25 @@ gnupg_module_name (int which)
+         X(bindir, "g10", GPG_NAME "v");
+ 
+     case GNUPG_MODULE_NAME_CONNECT_AGENT:
++#if __MVS__
++      X(bindir, "bin", "gpg-connect-agent");
++#else
+       X(bindir, "tools", "gpg-connect-agent");
++#endif
+ 
+     case GNUPG_MODULE_NAME_GPGCONF:
++#if __MVS__
++      X(bindir, "bin", "gpgconf");
++#else
+       X(bindir, "tools", "gpgconf");
++#endif
+ 
+     case GNUPG_MODULE_NAME_CARD:
++#if __MVS__
++      X(bindir, "bin", "gpg-card");
++#else
+       X(bindir, "tools", "gpg-card");
++#endif
+ 
+     default:
+       BUG ();
