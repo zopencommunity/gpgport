@@ -44,7 +44,6 @@ zopen_append_to_setup()
   echo "GPG_CONF_HOME=\"\$HOME/.gnupg\""
   echo "mkdir -p \$GPG_CONF_HOME" 
 echo "cat > \$HOME/.gnupg/gpg-agent.conf <<EOF
-pinentry-program \$PINENTRY_HOME/bin/pinentry-tty
 log-file \$GPG_CONF_HOME/gpg-agent.log
 EOF"
 
