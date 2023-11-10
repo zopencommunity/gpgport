@@ -1,5 +1,5 @@
 diff --git a/configure b/configure
-index aca916f..4ae9025 100755
+index aca916f..c037331 100755
 --- a/configure
 +++ b/configure
 @@ -9207,7 +9207,7 @@ $as_echo "$as_me: WARNING:
@@ -11,3 +11,17 @@ index aca916f..4ae9025 100755
         LIBUSB_NAME=
         LIBUSB_LIBS=
         LIBUSB_CPPFLAGS=
+@@ -14991,11 +14991,11 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ #ifdef __cplusplus
+ extern "C"
+ #endif
+-char deflateInit2_ ();
++char deflate();
+ int
+ main ()
+ {
+-return deflateInit2_ ();
++return deflate();
+   ;
+   return 0;
+ }
