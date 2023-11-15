@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index 099c6a8..0c3ad7e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1490,7 +1490,7 @@ if test "$use_zip" = yes ; then
+     ])
+ 
+   AC_CHECK_HEADER(zlib.h,
+-     AC_CHECK_LIB(z, deflateInit2_,
++     AC_CHECK_LIB(z, deflate,
+        [
+        ZLIBS="-lz"
+        AC_DEFINE(HAVE_ZIP,1, [Defined if ZIP and ZLIB are supported])
