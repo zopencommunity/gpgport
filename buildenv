@@ -1,7 +1,10 @@
+# bump: gpg-version /GPG_VERSION="(.*)"/ https://gnupg.org/ftp/gcrypt/gnupg/|re:/gnupg-([\d.]+).tar.bz2/$1/|semver:*
 GPG_VERSION="2.4.0"
-export ZOPEN_TARBALL_URL="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2"
-export ZOPEN_TARBALL_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses ntbtls zlib zip"
-export ZOPEN_TYPE="TARBALL"
+
+export ZOPEN_STABLE_URL="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2"
+export ZOPEN_STABLE_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses ntbtls zlib zip"
+export ZOPEN_BUILD_LINE="STABLE"
+
 export ZOPEN_COMP=CLANG
 GPG_TTY=$(tty)
 export GPG_TTY
@@ -61,8 +64,6 @@ EOF"
 
 zopen_get_version()
 {
-  # Modify to echo the version of your tool/library
-  # Rather than hardcoding the version, obtain the version by running the tool/library
   echo "${GPG_VERSION}"
 }
 
