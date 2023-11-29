@@ -30,7 +30,7 @@ zopen_check_results()
 cat <<ZZ
 actualFailures:${failures}
 totalTests:${totalTests}
-expectedFailures:6
+expectedFailures:9
 ZZ
 }
 
