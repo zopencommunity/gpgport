@@ -1,8 +1,8 @@
 diff --git a/common/homedir.c b/common/homedir.c
-index 286685f..728798c 100644
+index 286685f..92d614b 100644
 --- a/common/homedir.c
 +++ b/common/homedir.c
-@@ -478,6 +478,64 @@ w32_rootdir (void)
+@@ -478,6 +478,61 @@ w32_rootdir (void)
  
  
  #ifndef HAVE_W32_SYSTEM /* Unix */
@@ -41,9 +41,6 @@ index 286685f..728798c 100644
 +        perror("getpwuid() error");
 +      else
 +      {
-+         printf("token %d: pid %10d, user %8s, started %s", token,
-+               (int) buf.ps_pid, pw->pw_name,
-+               ctime(&buf.ps_starttime));
 +         pid_t mypid = getpid();
 +         if (buf.ps_pid == mypid)
 +         {
@@ -67,7 +64,7 @@ index 286685f..728798c 100644
  /* Determine the root directory of the gnupg installation on Unix.
   * The standard case is that this function returns NULL so that the
   * root directory as configured at build time is used.  However, it
-@@ -516,8 +574,22 @@ unix_rootdir (int want_sysconfdir)
+@@ -516,8 +571,22 @@ unix_rootdir (int want_sysconfdir)
        for (;;)
          {
            buffer = xmalloc (bufsize+1);
@@ -92,7 +89,7 @@ index 286685f..728798c 100644
              {
                err = gpg_error_from_syserror ();
                buffer[0] = 0;
-@@ -1547,6 +1619,9 @@ gnupg_set_builddir (const char *newdir)
+@@ -1547,6 +1616,9 @@ gnupg_set_builddir (const char *newdir)
  static void
  gnupg_set_builddir_from_env (void)
  {
@@ -102,7 +99,7 @@ index 286685f..728798c 100644
  #if defined(IS_DEVELOPMENT_VERSION) || defined(ENABLE_GNUPG_BUILDDIR_ENVVAR)
    if (gnupg_build_directory)
      return;
-@@ -1581,6 +1656,8 @@ gnupg_module_name (int which)
+@@ -1581,6 +1653,8 @@ gnupg_module_name (int which)
      case GNUPG_MODULE_NAME_AGENT:
  #ifdef GNUPG_DEFAULT_AGENT
        return GNUPG_DEFAULT_AGENT;
@@ -111,7 +108,7 @@ index 286685f..728798c 100644
  #else
        X(bindir, "agent", "gpg-agent");
  #endif
-@@ -1609,6 +1686,8 @@ gnupg_module_name (int which)
+@@ -1609,6 +1683,8 @@ gnupg_module_name (int which)
      case GNUPG_MODULE_NAME_DIRMNGR:
  #ifdef GNUPG_DEFAULT_DIRMNGR
        return GNUPG_DEFAULT_DIRMNGR;
@@ -120,7 +117,7 @@ index 286685f..728798c 100644
  #else
        X(bindir, "dirmngr", DIRMNGR_NAME);
  #endif
-@@ -1638,13 +1717,20 @@ gnupg_module_name (int which)
+@@ -1638,13 +1714,20 @@ gnupg_module_name (int which)
        X(libexecdir, "tools", "gpg-check-pattern");
  
      case GNUPG_MODULE_NAME_GPGSM:
@@ -142,7 +139,7 @@ index 286685f..728798c 100644
  #endif
          X(bindir, "g10", GPG_NAME);
  
-@@ -1653,17 +1739,32 @@ gnupg_module_name (int which)
+@@ -1653,17 +1736,32 @@ gnupg_module_name (int which)
        if (! gnupg_build_directory)
          X(bindir, "g10", GPG_NAME "v2");
        else
