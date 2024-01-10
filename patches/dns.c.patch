@@ -1,0 +1,13 @@
+diff --git a/dirmngr/dns.c b/dirmngr/dns.c
+index e0eb332..5896a39 100644
+--- a/dirmngr/dns.c
++++ b/dirmngr/dns.c
+@@ -1188,7 +1188,7 @@ static size_t dns_recv(int fd, void *dst, size_t lim, int flags, dns_error_t *er
+ } /* dns_recv() */
+ 
+ static size_t dns_send_nopipe(int fd, const void *src, size_t len, int flags, dns_error_t *_error) {
+-#if _WIN32 || !defined SIGPIPE || defined SO_NOSIGPIPE
++#if _WIN32 || !defined SIGPIPE || defined SO_NOSIGPIPE || defined __MVS__
+ 	return dns_send(fd, src, len, flags, _error);
+ #elif defined MSG_NOSIGNAL
+ 	return dns_send(fd, src, len, (flags|MSG_NOSIGNAL), _error);

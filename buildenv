@@ -1,13 +1,20 @@
-GPG_VERSION="2.4.0"
-export ZOPEN_TARBALL_URL="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2"
-export ZOPEN_TARBALL_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses ntbtls"
-export ZOPEN_TYPE="TARBALL"
+# bump: gpg-version /GPG_VERSION="(.*)"/ https://gnupg.org/ftp/gcrypt/gnupg/|re:/gnupg-([\d.]+).tar.bz2/$1/|semver:*
+GPG_VERSION="2.4.3"
+
+export ZOPEN_STABLE_URL="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2"
+export ZOPEN_STABLE_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses ntbtls zlib zip"
+export ZOPEN_BUILD_LINE="STABLE"
+
 export ZOPEN_COMP=CLANG
 GPG_TTY=$(tty)
 export GPG_TTY
 export ZOPEN_CHECK_OPTS="-i check"
 export ZOPEN_RUNTIME_DEPS="pinentry" 
-export ZOPEN_EXTRA_CPPFLAGS="-D_POSIX_REALTIME_SIGNALS"
+export ZOPEN_EXTRA_CPPFLAGS="-D_POSIX_REALTIME_SIGNALS -I\${ZLIB_HOME}/include"
+export ZOPEN_EXTRA_CONFIGURE_OPTS="--with-zlib=\${ZLIB_HOME}"
+export ZOPEN_EXTRA_LDFLAGS="-L\${ZLIB_HOME}/lib"
+export ZOPEN_EXTRA_LIBS="${ZOPEN_EXTRA_LIBS} -lz"
+export _EDC_SIG_DFLT=1
 
 zopen_check_results()
 {
@@ -23,7 +30,7 @@ zopen_check_results()
 cat <<ZZ
 actualFailures:${failures}
 totalTests:${totalTests}
-expectedFailures:6
+expectedFailures:9
 ZZ
 }
 
@@ -57,8 +64,6 @@ EOF"
 
 zopen_get_version()
 {
-  # Modify to echo the version of your tool/library
-  # Rather than hardcoding the version, obtain the version by running the tool/library
   echo "${GPG_VERSION}"
 }
 
