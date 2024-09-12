@@ -1,5 +1,5 @@
 # bump: gpg-version /GPG_VERSION="(.*)"/ https://gnupg.org/ftp/gcrypt/gnupg/|re:/gnupg-([\d.]+).tar.bz2/$1/|semver:*
-GPG_VERSION="2.4.4"
+GPG_VERSION="2.5.1"
 
 export ZOPEN_STABLE_URL="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2"
 export ZOPEN_STABLE_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses ntbtls zlib zip"
