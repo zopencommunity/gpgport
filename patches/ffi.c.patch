@@ -1,0 +1,14 @@
+diff --git a/tests/gpgscm/ffi.c b/tests/gpgscm/ffi.c
+index 1179e01..83a6a45 100644
+--- a/tests/gpgscm/ffi.c
++++ b/tests/gpgscm/ffi.c
+@@ -53,6 +53,9 @@
+ #include "ffi.h"
+ #include "ffi-private.h"
+ 
++#ifdef __MVS__
++#include <sys/time.h>
++#endif
+ /* For use in nice error messages.  */
+ static const char *
+ ordinal_suffix (int n)
