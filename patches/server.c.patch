@@ -1,0 +1,22 @@
+diff --git a/dirmngr/server.c b/dirmngr/server.c
+index 710317e..efb9285 100644
+--- a/dirmngr/server.c
++++ b/dirmngr/server.c
+@@ -357,7 +357,7 @@ is_tor_running (ctrl_t ctrl)
+ static gpg_error_t
+ check_owner_permission (assuan_context_t ctx, const char *failtext)
+ {
+-#ifdef HAVE_W32_SYSTEM
++#if defined(HAVE_W32_SYSTEM) || defined(__MVS__)
+   /* Under Windows the dirmngr is always run under the control of the
+      user.  */
+   (void)ctx;
+@@ -3219,7 +3219,7 @@ start_command_handler (assuan_fd_t fd, unsigned int session_id)
+           break;
+         }
+ 
+-#ifndef HAVE_W32_SYSTEM
++#if !defined(HAVE_W32_SYSTEM) && !defined(__MVS__)
+       if (opt.verbose)
+         {
+ 	  assuan_peercred_t peercred;
