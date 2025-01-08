@@ -1,0 +1,13 @@
+diff --git a/agent/command.c b/agent/command.c
+index ebfffa6..6bbe6e8 100644
+--- a/agent/command.c
++++ b/agent/command.c
+@@ -4485,7 +4485,7 @@ start_command_handler (ctrl_t ctrl, gnupg_fd_t listen_fd, gnupg_fd_t fd)
+            * and thus we silence the error.  */
+           if (listen_fd == GNUPG_INVALID_FD && fd == GNUPG_INVALID_FD)
+             ;
+-#ifdef HAVE_W32_SYSTEM
++#if defined(HAVE_W32_SYSTEM) || defined (__MVS__)
+           else if (gpg_err_code (rc) == GPG_ERR_ASS_GENERAL)
+             ;
+ #endif
