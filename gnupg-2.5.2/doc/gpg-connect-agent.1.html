@@ -1,0 +1,482 @@
+<!-- Created from Texinfo source by yat2m 1.51 -->
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+ <title>GPG-CONNECT-AGENT(1)</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/share/site.css" type="text/css" />
+</head>
+<body>
+<div id="wrapper">
+<div id="content">
+<div class="y2m">
+<p class="y2m y2m-top"><span class="y2m-left">GPG-CONNECT-AGENT(1)</span> <span class="y2m-center">GNU Privacy Guard 2.6</span> <span class="y2m-right">GPG-CONNECT-AGENT(1)</span></p>
+<div class="y2m-section">
+<h2 class="y2m-sh">NAME</h2>
+@para{}<strong>gpg-connect-agent</strong>
+ &mdash; Communicate with a running agent
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">SYNOPSIS</h2>
+@para{}<strong> gpg-connect-agent</strong>
+<span>[</span>  <em>options</em>  <span>]</span>  <em>[commands]</em>
+
+<p>
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">DESCRIPTION</h2>
+
+<p>The <i>gpg-connect-agent</i> is a utility to communicate with a
+running <i>gpg-agent</i>.  It is useful to check out the commands
+<i>gpg-agent</i> provides using the Assuan interface.  It might
+also be useful for scripting simple applications.  Input is expected
+at stdin and output gets printed to stdout.
+</p>
+
+<p>
+It is very similar to running <i>gpg-agent</i> in server mode; but
+here we connect to a running instance.
+</p>
+
+<p>
+</p>
+
+<p>
+</p>
+
+<p>
+
+The following options may be used:
+</p>
+
+<p>
+<ul>
+<li><span class="y2m-item">--dirmngr</span>
+Connect to a running directory manager (keyserver client) instead of
+to the gpg-agent.  If a dirmngr is not running, start it.
+
+</li>
+<li><span class="y2m-item">--keyboxd</span>
+Connect to a running keybox daemon instead of
+to the gpg-agent.  If a keyboxd is not running, start it.
+
+</li>
+<li><span class="y2m-item">-S</span>
+    <span class="y2m-item">--raw-socket <span class="y2m-args"><u>name</u></span></span>
+Connect to socket <u>name</u> assuming this is an Assuan style server.
+Do not run any special initializations or environment checks.  This may
+be used to directly connect to any Assuan style socket server.
+
+</li>
+<li><span class="y2m-item">-E</span>
+    <span class="y2m-item">--exec</span>
+Take the rest of the command line as a program and it's arguments and
+execute it as an Assuan server. Here is how you would run <i>gpgsm</i>:
+
+<pre>
+ gpg-connect-agent --exec gpgsm --server
+</pre>
+Note that you may not use options on the command line in this case.
+
+</li>
+<li><span class="y2m-item">-v</span>
+    <span class="y2m-item">--verbose</span>
+Output additional information while running.
+
+</li>
+<li><span class="y2m-item">-q</span>
+</li>
+<li><span class="y2m-item">--quiet</span>
+Try to be as quiet as possible.
+
+</li>
+<li><span class="y2m-item">--homedir <span class="y2m-args"><u>dir</u></span></span>
+Set the name of the home directory to <u>dir</u>. If this option is not
+used, the home directory defaults to ~/.gnupg.  It is only
+recognized when given on the command line.  It also overrides any home
+directory stated through the environment variable GNUPGHOME or
+(on Windows systems) by means of the Registry entry
+<u>HKCU&bsol;Software&bsol;GNU&bsol;GnuPG:HomeDir</u>.
+
+On Windows systems it is possible to install GnuPG as a portable
+application.  In this case only this command line option is
+considered, all other ways to set a home directory are ignored.
+
+</li>
+<li><span class="y2m-item">--chuid <span class="y2m-args"><u>uid</u></span></span>
+Change the current user to <u>uid</u> which may either be a number or a
+name.  This can be used from the root account to run gpg-connect-agent
+for another user.  If <u>uid</u> is not the current UID a standard PATH
+is set and the envvar GNUPGHOME is unset.  To override the latter the
+option <samp>--homedir</samp> can be used.  This option has only an effect
+when used on the command line.  This option has currently no effect at
+all on Windows.
+
+</li>
+<li><span class="y2m-item">--no-ext-connect</span>
+When using <samp>-S</samp> or <samp>--exec</samp>, <i>gpg-connect-agent</i>
+connects to the Assuan server in extended mode to allow descriptor
+passing.  This option makes it use the old mode.
+
+</li>
+<li><span class="y2m-item">--no-autostart</span>
+Do not start the gpg-agent or the dirmngr if it has not yet been
+started.
+
+</li>
+<li><span class="y2m-item">--no-history</span>
+In interactive mode the command line history is usually saved and
+restored to and from a file below the GnuPG home directory.  This
+option inhibits the use of that file.
+
+</li>
+<li><span class="y2m-item">--agent-program <span class="y2m-args"><u>file</u></span></span>
+Specify the agent program to be started if none is running.  The
+default value is determined by running <i>gpgconf</i> with the
+option <samp>--list-dirs</samp>.  Note that the pipe symbol (<samp>|</samp>) is
+used for a regression test suite hack and may thus not be used in the
+file name.
+
+</li>
+<li><span class="y2m-item">--dirmngr-program <span class="y2m-args"><u>file</u></span></span>
+Specify the directory manager (keyserver client) program to be started
+if none is running.  This has only an effect if used together with the
+option <samp>--dirmngr</samp>.
+
+</li>
+<li><span class="y2m-item">--keyboxd-program <span class="y2m-args"><u>file</u></span></span>
+Specify the keybox daemon program to be started if none is running.
+This has only an effect if used together with the option
+<samp>--keyboxd</samp>.
+
+</li>
+<li><span class="y2m-item">-r <span class="y2m-args"><u>file</u></span></span>
+    <span class="y2m-item">--run <span class="y2m-args"><u>file</u></span></span>
+Run the commands from <u>file</u> at startup and then continue with the
+regular input method.  Note, that commands given on the command line are
+executed after this file.
+
+</li>
+<li><span class="y2m-item">-s</span>
+    <span class="y2m-item">--subst</span>
+Run the command <samp>/subst</samp> at startup.
+
+</li>
+<li><span class="y2m-item">--hex</span>
+Print data lines in a hex format and the ASCII representation of
+non-control characters.
+
+</li>
+<li><span class="y2m-item">--decode</span>
+Decode data lines.  That is to remove percent escapes but make sure that
+a new line always starts with a D and a space.
+
+</li>
+<li><span class="y2m-item">-u</span>
+    <span class="y2m-item">--unbuffered</span>
+Set stdin and stdout into unbuffered I/O mode.  This this sometimes
+useful for scripting.
+
+
+</li>
+</ul>
+</p>
+
+<p>
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">CONTROL COMMANDS</h2>
+
+<p></p>
+
+<p>
+While reading Assuan commands, gpg-agent also allows a few special
+commands to control its operation.  These control commands all start
+with a slash (<samp>/</samp>).
+</p>
+
+<p>
+<ul>
+
+<li><span class="y2m-item">/echo <span class="y2m-args"><u>args</u></span></span>
+Just print <u>args</u>.
+
+</li>
+<li><span class="y2m-item">/let <span class="y2m-args"><u>name</u> <u>value</u></span></span>
+Set the variable <u>name</u> to <u>value</u>.  Variables are only
+substituted on the input if the <i>/subst</i> has been used.
+Variables are referenced by prefixing the name with a dollar sign and
+optionally include the name in curly braces.  The rules for a valid name
+are identically to those of the standard bourne shell.  This is not yet
+enforced but may be in the future.  When used with curly braces no
+leading or trailing white space is allowed.
+
+If a variable is not found, it is searched in the environment and if
+found copied to the table of variables.
+
+Variable functions are available: The name of the function must be
+followed by at least one space and the at least one argument.  The
+following functions are available:
+
+</li>
+<ul>
+<li><span class="y2m-item">get</span>
+Return a value described by the argument.  Available arguments are:
+
+</li>
+<ul>
+<li><span class="y2m-item">cwd</span>
+The current working directory.
+</li>
+<li><span class="y2m-item">homedir</span>
+The gnupg homedir.
+</li>
+<li><span class="y2m-item">sysconfdir</span>
+GnuPG's system configuration directory.
+</li>
+<li><span class="y2m-item">bindir</span>
+GnuPG's binary directory.
+</li>
+<li><span class="y2m-item">libdir</span>
+GnuPG's library directory.
+</li>
+<li><span class="y2m-item">libexecdir</span>
+GnuPG's library directory for executable files.
+</li>
+<li><span class="y2m-item">datadir</span>
+GnuPG's data directory.
+</li>
+<li><span class="y2m-item">serverpid</span>
+The PID of the current server. Command <i>/serverpid</i> must
+have been given to return a useful value.
+</li>
+</ul>
+
+<li><span class="y2m-item">unescape <span class="y2m-args"><u>args</u></span></span>
+Remove C-style escapes from <u>args</u>.  Note that <samp>&bsol;0</samp> and
+<samp>&bsol;x00</samp> terminate the returned string implicitly.  The string to be
+converted are the entire arguments right behind the delimiting space of
+the function name.
+
+</li>
+<li><span class="y2m-item">unpercent <span class="y2m-args"><u>args</u></span></span>
+    <span class="y2m-item">unpercent+ <span class="y2m-args"><u>args</u></span></span>
+Remove percent style escaping from <u>args</u>.  Note that <samp>%00</samp>
+terminates the string implicitly.  The string to be converted are the
+entire arguments right behind the delimiting space of the function
+name. <samp>unpercent+</samp> also maps plus signs to a spaces.
+
+</li>
+<li><span class="y2m-item">percent <span class="y2m-args"><u>args</u></span></span>
+    <span class="y2m-item">percent+ <span class="y2m-args"><u>args</u></span></span>
+Escape the <u>args</u> using percent style escaping.  Tabs, formfeeds,
+linefeeds, carriage returns and colons are escaped. <samp>percent+</samp> also
+maps spaces to plus signs.
+
+</li>
+<li><span class="y2m-item">errcode <span class="y2m-args"><u>arg</u></span></span>
+    <span class="y2m-item">errsource <span class="y2m-args"><u>arg</u></span></span>
+    <span class="y2m-item">errstring <span class="y2m-args"><u>arg</u></span></span>
+Assume <u>arg</u> is an integer and evaluate it using <samp>strtol</samp>.  Return
+the gpg-error error code, error source or a formatted string with the
+error code and error source.
+
+
+</li>
+<li><span class="y2m-item">+</span>
+    <span class="y2m-item">-</span>
+    <span class="y2m-item">*</span>
+    <span class="y2m-item">/</span>
+    <span class="y2m-item">%</span>
+Evaluate all arguments as long integers using <samp>strtol</samp> and apply
+this operator.  A division by zero yields an empty string.
+
+</li>
+<li><span class="y2m-item">!</span>
+    <span class="y2m-item">|</span>
+    <span class="y2m-item">&amp;</span>
+Evaluate all arguments as long integers using <samp>strtol</samp> and apply
+the logical operators NOT, OR or AND.  The NOT operator works on the
+last argument only.
+
+
+</li>
+</ul>
+
+
+<li><span class="y2m-item">/definq <span class="y2m-args"><u>name</u> <u>var</u></span></span>
+Use content of the variable <u>var</u> for inquiries with <u>name</u>.
+<u>name</u> may be an asterisk (<samp>*</samp>) to match any inquiry.
+
+
+</li>
+<li><span class="y2m-item">/definqfile <span class="y2m-args"><u>name</u> <u>file</u></span></span>
+Use content of <u>file</u> for inquiries with <u>name</u>.
+<u>name</u> may be an asterisk (<samp>*</samp>) to match any inquiry.
+
+</li>
+<li><span class="y2m-item">/definqprog <span class="y2m-args"><u>name</u> <u>prog</u></span></span>
+Run <u>prog</u> for inquiries matching <u>name</u> and pass the
+entire line to it as command line arguments.
+
+</li>
+<li><span class="y2m-item">/datafile <span class="y2m-args"><u>name</u></span></span>
+Write all data lines from the server to the file <u>name</u>.  The file
+is opened for writing and created if it does not exists.  An existing
+file is first truncated to 0.  The data written to the file fully
+decoded.  Using a single dash for <u>name</u> writes to stdout.  The
+file is kept open until a new file is set using this command or this
+command is used without an argument.
+
+</li>
+<li><span class="y2m-item">/showdef</span>
+Print all definitions
+
+</li>
+<li><span class="y2m-item">/cleardef</span>
+Delete all definitions
+
+</li>
+<li><span class="y2m-item">/sendfd <span class="y2m-args"><u>file</u> <u>mode</u></span></span>
+Open <u>file</u> in <u>mode</u> (which needs to be a valid <samp>fopen</samp>
+mode string) and send the file descriptor to the server.  This is
+usually followed by a command like <samp>INPUT FD</samp> to set the
+input source for other commands.
+
+</li>
+<li><span class="y2m-item">/recvfd</span>
+Not yet implemented.
+
+</li>
+<li><span class="y2m-item">/open <span class="y2m-args"><u>var</u> <u>file</u> [<u>mode</u>]</span></span>
+Open <u>file</u> and assign the file descriptor to <u>var</u>.  Warning:
+This command is experimental and might change in future versions.
+
+</li>
+<li><span class="y2m-item">/close <span class="y2m-args"><u>fd</u></span></span>
+Close the file descriptor <u>fd</u>.  Warning: This command is
+experimental and might change in future versions.
+
+</li>
+<li><span class="y2m-item">/showopen</span>
+Show a list of open files.
+
+</li>
+<li><span class="y2m-item">/serverpid</span>
+Send the Assuan command <i>GETINFO pid</i> to the server and store
+the returned PID for internal purposes.
+
+</li>
+<li><span class="y2m-item">/sleep</span>
+Sleep for a second.
+
+</li>
+<li><span class="y2m-item">/hex</span>
+    <span class="y2m-item">/nohex</span>
+Same as the command line option <samp>--hex</samp>.
+
+</li>
+<li><span class="y2m-item">/decode</span>
+    <span class="y2m-item">/nodecode</span>
+Same as the command line option <samp>--decode</samp>.
+
+</li>
+<li><span class="y2m-item">/subst</span>
+    <span class="y2m-item">/nosubst</span>
+Enable and disable variable substitution.  It defaults to disabled
+unless the command line option <samp>--subst</samp> has been used.
+If /subst as been enabled once, leading whitespace is removed from
+input lines which makes scripts easier to read.
+
+</li>
+<li><span class="y2m-item">/while <span class="y2m-args"><u>condition</u></span></span>
+    <span class="y2m-item">/end</span>
+These commands provide a way for executing loops.  All lines between
+the <samp>while</samp> and the corresponding <samp>end</samp> are executed as long
+as the evaluation of <u>condition</u> yields a non-zero value or is the
+string <samp>true</samp> or <samp>yes</samp>.  The evaluation is done by passing
+<u>condition</u> to the <samp>strtol</samp> function.  Example:
+
+
+<pre>
+  /subst
+  /let i 3
+  /while $i
+    /echo loop counter is $i
+    /let i ${- $i 1}
+  /end
+</pre>
+
+</li>
+<li><span class="y2m-item">/if <span class="y2m-args"><u>condition</u></span></span>
+    <span class="y2m-item">/end</span>
+These commands provide a way for conditional execution.  All lines between
+the <samp>if</samp> and the corresponding <samp>end</samp> are executed only if
+the evaluation of <u>condition</u> yields a non-zero value or is the
+string <samp>true</samp> or <samp>yes</samp>.  The evaluation is done by passing
+<u>condition</u> to the <samp>strtol</samp> function.
+
+</li>
+<li><span class="y2m-item">/run <span class="y2m-args"><u>file</u></span></span>
+Run commands from <u>file</u>.
+
+</li>
+<li><span class="y2m-item">/history <span class="y2m-args">--clear</span></span>
+Clear the command history.
+
+</li>
+<li><span class="y2m-item">/bye</span>
+Terminate the connection and the program.
+
+</li>
+<li><span class="y2m-item">/help</span>
+Print a list of available control commands.
+
+</li>
+</ul>
+</p>
+
+<p>
+</p>
+
+<p>
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">SEE ALSO</h2>
+
+<p><i><a href="gpg-agent.1.html">gpg-agent</a>(1)</i>,
+<i><a href="scdaemon.1.html">scdaemon</a>(1)</i>
+</p>
+
+<p>
+The full documentation for this tool is maintained as a Texinfo manual.
+If GnuPG and the info program are properly installed at your site, the
+command
+</p>
+
+<p>
+
+<pre>
+info gnupg
+</pre>
+</p>
+
+<p>
+should give you access to the complete manual including a menu structure
+and an index.
+</p>
+
+<p>
+</p>
+
+<p>
+</div>
+<p class="y2m y2m-footer"><span class="y2m-left">GnuPG 2.5.2</span> <span class="y2m-center">2024-11-22</span> <span class="y2m-right">GPG-CONNECT-AGENT(1)</span></p>
+</div><!-- class y2m -->
+</div><!-- end content -->
+</div><!-- end wrapper -->
+</body>
+</html>

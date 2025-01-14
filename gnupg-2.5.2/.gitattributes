@@ -1,0 +1,16 @@
+
+* text  working-tree-encoding=UTF-8
+*.jpg binary
+*.dvi binary
+*.xz binary
+*.gz binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.pdf binary
+*.ttf binary
+*.wbmp binary
+*.gmo binary
+*.po binary
+*.der binary
+

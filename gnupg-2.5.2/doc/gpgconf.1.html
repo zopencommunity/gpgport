@@ -1,0 +1,1125 @@
+<!-- Created from Texinfo source by yat2m 1.51 -->
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+ <title>GPGCONF(1)</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/share/site.css" type="text/css" />
+</head>
+<body>
+<div id="wrapper">
+<div id="content">
+<div class="y2m">
+<p class="y2m y2m-top"><span class="y2m-left">GPGCONF(1)</span> <span class="y2m-center">GNU Privacy Guard 2.6</span> <span class="y2m-right">GPGCONF(1)</span></p>
+<div class="y2m-section">
+<h2 class="y2m-sh">NAME</h2>
+@para{}<strong>gpgconf</strong>
+ &mdash; Modify .gnupg home directories
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">SYNOPSIS</h2>
+@para{}<strong>gpgconf</strong>
+<span>[</span>  <em>options</em>  <span>]</span>
+<strong>--list-components</strong>
+<br/>
+<strong>gpgconf</strong>
+<span>[</span>  <em>options</em>  <span>]</span>
+<strong>--list-options</strong>
+<em>component</em>
+<br/>
+<strong>gpgconf</strong>
+<span>[</span>  <em>options</em>  <span>]</span>
+<strong>--change-options</strong>
+<em>component</em>
+
+<p>
+</p>
+
+<p>
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">DESCRIPTION</h2>
+
+<p>The <i>gpgconf</i> is a utility to automatically and reasonable
+safely query and modify configuration files in the .gnupg home
+directory.  It is designed not to be invoked manually by the user, but
+automatically by graphical user interfaces (GUI).Please note
+that currently no locking is done, so concurrent access should be
+avoided.  There are some precautions to avoid corruption with
+concurrent usage, but results may be inconsistent and some changes may
+get lost.  The stateless design makes it difficult to provide more
+guarantees.
+</p>
+
+<p>
+<i>gpgconf</i> provides access to the configuration of one or more
+components of the GnuPG system.  These components correspond more or
+less to the programs that exist in the GnuPG framework, like GPG,
+GPGSM, DirMngr, etc.  But this is not a strict one-to-one
+relationship.  Not all configuration options are available through
+<i>gpgconf</i>.  <i>gpgconf</i> provides a generic and abstract
+method to access the most important configuration options that can
+feasibly be controlled via such a mechanism.
+</p>
+
+<p>
+<i>gpgconf</i> can be used to gather and change the options
+available in each component, and can also provide their default
+values.  <i>gpgconf</i> will give detailed type information that
+can be used to restrict the user's input without making an attempt to
+commit the changes.
+</p>
+
+<p>
+<i>gpgconf</i> provides the backend of a configuration editor.  The
+configuration editor would usually be a graphical user interface
+program that displays the current options, their default
+values, and allows the user to make changes to the options.  These
+changes can then be made active with <i>gpgconf</i> again.  Such a
+program that uses <i>gpgconf</i> in this way will be called GUI
+throughout this section.
+</p>
+
+<p>
+</p>
+
+<p>
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">COMMANDS</h2>
+
+<p>One of the following commands must be given:
+</p>
+
+<p>
+<ul>
+
+<li><span class="y2m-item">--list-components</span>
+List all components.  This is the default command used if none is
+specified.
+
+</li>
+<li><span class="y2m-item">--check-programs</span>
+List all available backend programs and test whether they are runnable.
+
+</li>
+<li><span class="y2m-item">--list-options <span class="y2m-args"><u>component</u></span></span>
+List all options of the component <u>component</u>.
+
+</li>
+<li><span class="y2m-item">--change-options <span class="y2m-args"><u>component</u></span></span>
+Change the options of the component <u>component</u>.
+
+</li>
+<li><span class="y2m-item">--check-options <span class="y2m-args"><u>component</u></span></span>
+Check the options for the component <u>component</u>.
+
+</li>
+<li><span class="y2m-item">--apply-profile <span class="y2m-args"><u>file</u></span></span>
+Apply the configuration settings listed in <u>file</u> to the
+configuration files.  If <u>file</u> has no suffix and no slashes the
+command first tries to read a file with the suffix <samp>.prf</samp> from
+the data directory (<samp>gpgconf --list-dirs datadir</samp>) before it
+reads the file verbatim.  A profile is divided into sections using the
+bracketed  component name.  Each section then lists the option which
+shall go into the respective configuration file.
+
+</li>
+<li><span class="y2m-item">--apply-defaults</span>
+Update all configuration files with values taken from the global
+configuration file (usually /etc/gnupg/gpgconf.conf).
+Note: This is a legacy mechanism.  Please use global configuration
+files instead.
+
+</li>
+<li><span class="y2m-item">--list-dirs <span class="y2m-args">[<u>names</u>]</span></span>
+    <span class="y2m-item">-L</span>
+Lists the directories used by <i>gpgconf</i>.  One directory is
+listed per line, and each line consists of a colon-separated list where
+the first field names the directory type (for example <samp>sysconfdir</samp>)
+and the second field contains the percent-escaped directory.  Although
+they are not directories, the socket file names used by
+<i>gpg-agent</i> and <i>dirmngr</i> are printed as well.  Note
+that the socket file names and the <samp>homedir</samp> lines are the default
+names and they may be overridden by command line switches.  If
+<u>names</u> are given only the directories or file names specified by
+the list names are printed without any escaping.
+
+</li>
+<li><span class="y2m-item">--list-config <span class="y2m-args">[<u>filename</u>]</span></span>
+List the global configuration file in a colon separated format.  If
+<u>filename</u> is given, check that file instead.
+
+</li>
+<li><span class="y2m-item">--check-config <span class="y2m-args">[<u>filename</u>]</span></span>
+Run a syntax check on the global configuration file.  If <u>filename</u>
+is given, check that file instead.
+
+
+</li>
+<li><span class="y2m-item">--query-swdb <span class="y2m-args"><u>package_name</u> [<u>version_string</u>]</span></span>
+Returns the current version for <u>package_name</u> and if
+<u>version_string</u> is given also an indicator on whether an update
+is available.  The actual file with the software version is
+automatically downloaded and checked by <i>dirmngr</i>.
+<i>dirmngr</i> uses a thresholds to avoid download the file too
+often and it does this by default only if it can be done via Tor.  To
+force an update of that file this command can be used:
+
+
+<pre>
+       gpg-connect-agent --dirmngr 'loadswdb --force' /bye
+</pre>
+
+</li>
+<li><span class="y2m-item">--reload <span class="y2m-args">[<u>component</u>]</span></span>
+    <span class="y2m-item">-R</span>
+Reload all or the given component. This is basically the same as
+sending a SIGHUP to the component.  Components which don't support
+reloading are ignored.  Without <u>component</u> or by using "all" for
+<u>component</u> all components which are daemons are reloaded.
+
+</li>
+<li><span class="y2m-item">--launch <span class="y2m-args">[<u>component</u>]</span></span>
+If the <u>component</u> is not already running, start it.
+<i>component</i> must be a daemon.  This is in general not required
+because the system starts these daemons as needed.  However, external
+software making direct use of <i>gpg-agent</i> or <i>dirmngr</i>
+may use this command to ensure that they are started.  Using "all" for
+<u>component</u> launches all components which are daemons.
+
+</li>
+<li><span class="y2m-item">--kill <span class="y2m-args">[<u>component</u>]</span></span>
+    <span class="y2m-item">-K</span>
+Kill the given component that runs as a daemon, including
+<i>gpg-agent</i>, <i>dirmngr</i>, and <i>scdaemon</i>.  A
+<i>component</i> which does not run as a daemon will be ignored.
+Using "all" for <u>component</u> kills all components running as
+daemons.  Note that as of now reload and kill have the same effect for
+<i>scdaemon</i>.
+
+</li>
+<li><span class="y2m-item">--create-socketdir</span>
+Create a directory for sockets below /run/user or /var/run/user.  This
+is command is only required if a non default home directory is used
+and the /run based sockets shall be used.  For the default home
+directory GnuPG creates a directory on the fly.
+
+</li>
+<li><span class="y2m-item">--remove-socketdir</span>
+Remove a directory created with command <samp>--create-socketdir</samp>.
+
+</li>
+<li><span class="y2m-item">--unlock <span class="y2m-args"><u>name</u></span></span>
+    <span class="y2m-item">--lock <span class="y2m-args"><u>name</u></span></span>
+Remove a stale lock file hold for file.  The file is
+expected in the current GnuPG home directory.  This command is usually
+not required because GnuPG is able to detect and remove stale lock
+files.  Before using the command make sure that the file protected by
+the lock file is actually not in use.  The lock command may be used to
+lock an accidentally removed lock file.  Note that the commands have no
+effect on Windows because the mere existence of a lock file does not
+mean that the lock is active.
+
+</li>
+</ul>
+</p>
+
+<p>
+</p>
+
+<p>
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">OPTIONS</h2>
+
+<p></p>
+
+<p>
+The following options may be used:
+</p>
+
+<p>
+<ul>
+
+<li><span class="y2m-item">-o <span class="y2m-args"><u>file</u></span></span>
+    <span class="y2m-item">--output <span class="y2m-args"><u>file</u></span></span>
+Write output to <u>file</u>.  Default is to write to stdout.
+
+</li>
+<li><span class="y2m-item">-v</span>
+    <span class="y2m-item">--verbose</span>
+Outputs additional information while running.  Specifically, this
+extends numerical field values by human-readable descriptions.
+
+</li>
+<li><span class="y2m-item">-q</span>
+    <span class="y2m-item">--quiet</span>
+Try to be as quiet as possible.
+
+</li>
+<li><span class="y2m-item">--homedir <span class="y2m-args"><u>dir</u></span></span>
+Set the name of the home directory to <u>dir</u>. If this option is not
+used, the home directory defaults to ~/.gnupg.  It is only
+recognized when given on the command line.  It also overrides any home
+directory stated through the environment variable GNUPGHOME or
+(on Windows systems) by means of the Registry entry
+<u>HKCU&bsol;Software&bsol;GNU&bsol;GnuPG:HomeDir</u>.
+
+On Windows systems it is possible to install GnuPG as a portable
+application.  In this case only this command line option is
+considered, all other ways to set a home directory are ignored.
+
+</li>
+<li><span class="y2m-item">--chuid <span class="y2m-args"><u>uid</u></span></span>
+Change the current user to <u>uid</u> which may either be a number or a
+name.  This can be used from the root account to get information on
+the GnuPG environment of the specified user or to start or kill
+daemons.  If <u>uid</u> is not the current UID a standard PATH is set
+and the envvar GNUPGHOME is unset.  To override the latter the option
+<samp>--homedir</samp> can be used.  This option has currently no effect
+on Windows.
+
+</li>
+<li><span class="y2m-item">-n</span>
+    <span class="y2m-item">--dry-run</span>
+Do not actually change anything.  This is currently only implemented
+for <samp>--change-options</samp> and can be used for testing purposes.
+
+</li>
+<li><span class="y2m-item">-r</span>
+    <span class="y2m-item">--runtime</span>
+Only used together with <samp>--change-options</samp>.  If one of the
+modified options can be changed in a running daemon process, signal
+the running daemon to ask it to reparse its configuration file after
+changing.
+
+This means that the changes will take effect at run-time, as far as
+this is possible.  Otherwise, they will take effect at the next start
+of the respective backend programs.
+
+</li>
+<li><span class="y2m-item">--status-fd <span class="y2m-args"><u>n</u></span></span>
+Write special status strings to the file descriptor <u>n</u>.  This
+program returns the status messages SUCCESS or FAILURE which are
+helpful when the caller uses a double fork approach and can't easily
+get the return code of the process.
+
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">USAGE</h2>
+
+<p></p>
+
+<p>
+The command <samp>--list-components</samp> will list all components that can
+be configured with <i>gpgconf</i>.  Usually, one component will
+correspond to one GnuPG-related program and contain the options of
+that program's configuration file that can be modified using
+<i>gpgconf</i>.  However, this is not necessarily the case.  A
+component might also be a group of selected options from several
+programs, or contain entirely virtual options that have a special
+effect rather than changing exactly one option in one configuration
+file.
+</p>
+
+<p>
+A component is a set of configuration options that semantically belong
+together.  Furthermore, several changes to a component can be made in
+an atomic way with a single operation.  The GUI could for example
+provide a menu with one entry for each component, or a window with one
+tabulator sheet per component.
+</p>
+
+<p>
+The command <samp>--list-components</samp> lists all available
+components, one per line.  The format of each line is:
+</p>
+
+<p>
+<samp><u>name</u>:<u>description</u>:<u>pgmname</u>:</samp>
+</p>
+
+<p>
+</li>
+<ul>
+<li><span class="y2m-item">name</span>
+This field contains a name tag of the component.  The name tag is used
+to specify the component in all communication with <i>gpgconf</i>.
+The name tag is to be used <em>verbatim</em>.  It is thus not in any
+escaped format.
+
+</li>
+<li><span class="y2m-item">description</span>
+The <em>string</em> in this field contains a human-readable description
+of the component.  It can be displayed to the user of the GUI for
+informational purposes.  It is <em>percent-escaped</em> and
+<em>localized</em>.
+
+</li>
+<li><span class="y2m-item">pgmname</span>
+The <em>string</em> in this field contains the absolute name of the
+program's file.  It can be used to unambiguously invoke that program.
+It is <em>percent-escaped</em>.
+</li>
+</ul>
+</p>
+
+<p>
+Example:
+
+<pre>
+$ gpgconf --list-components
+gpg:GPG for OpenPGP:/usr/local/bin/gpg2:
+gpg-agent:GPG Agent:/usr/local/bin/gpg-agent:
+scdaemon:Smartcard Daemon:/usr/local/bin/scdaemon:
+gpgsm:GPG for S/MIME:/usr/local/bin/gpgsm:
+dirmngr:Directory Manager:/usr/local/bin/dirmngr:
+</pre>
+</p>
+
+<p>
+</p>
+
+<p>
+</p>
+
+<p>
+<h3> Checking programs</h3>
+</p>
+
+<p>
+The command <samp>--check-programs</samp> is similar to
+<samp>--list-components</samp> but works on backend programs and not on
+components.  It runs each program to test whether it is installed and
+runnable.  This also includes a syntax check of all config file options
+of the program.
+</p>
+
+<p>
+The command <samp>--check-programs</samp> lists all available
+programs, one per line.  The format of each line is:
+</p>
+
+<p>
+<samp><u>name</u>:<u>description</u>:<u>pgmname</u>:<u>avail</u>:<u>okay</u>:<u>cfgfile</u>:<u>line</u>:<u>error</u>:</samp>
+</p>
+
+<p>
+<ul>
+<li><span class="y2m-item">name</span>
+This field contains a name tag of the program which is identical to the
+name of the component.  The name tag is to be used <em>verbatim</em>.  It
+is thus not in any escaped format.  This field may be empty to indicate
+a continuation of error descriptions for the last name.  The description
+and pgmname fields are then also empty.
+
+</li>
+<li><span class="y2m-item">description</span>
+The <em>string</em> in this field contains a human-readable description
+of the component.  It can be displayed to the user of the GUI for
+informational purposes.  It is <em>percent-escaped</em> and
+<em>localized</em>.
+
+</li>
+<li><span class="y2m-item">pgmname</span>
+The <em>string</em> in this field contains the absolute name of the
+program's file.  It can be used to unambiguously invoke that program.
+It is <em>percent-escaped</em>.
+
+</li>
+<li><span class="y2m-item">avail</span>
+The <em>boolean value</em> in this field indicates whether the program is
+installed and runnable.
+
+</li>
+<li><span class="y2m-item">okay</span>
+The <em>boolean value</em> in this field indicates whether the program's
+config file is syntactically okay.
+
+</li>
+<li><span class="y2m-item">cfgfile</span>
+If an error occurred in the configuration file (as indicated by a false
+value in the field <samp>okay</samp>), this field has the name of the failing
+configuration file.  It is <em>percent-escaped</em>.
+
+</li>
+<li><span class="y2m-item">line</span>
+If an error occurred in the configuration file, this field has the line
+number of the failing statement in the configuration file.
+It is an <em>unsigned number</em>.
+
+</li>
+<li><span class="y2m-item">error</span>
+If an error occurred in the configuration file, this field has the error
+text of the failing statement in the configuration file.  It is
+<em>percent-escaped</em> and <em>localized</em>.
+
+</li>
+</ul>
+</p>
+
+<p>
+
+In the following example the <i>dirmngr</i> is not runnable and the
+configuration file of <i>scdaemon</i> is not okay.
+</p>
+
+<p>
+
+<pre>
+$ gpgconf --check-programs
+gpg:GPG for OpenPGP:/usr/local/bin/gpg2:1:1:
+gpg-agent:GPG Agent:/usr/local/bin/gpg-agent:1:1:
+scdaemon:Smartcard Daemon:/usr/local/bin/scdaemon:1:0:
+gpgsm:GPG for S/MIME:/usr/local/bin/gpgsm:1:1:
+dirmngr:Directory Manager:/usr/local/bin/dirmngr:0:0:
+</pre>
+</p>
+
+<p>
+
+The command configuration file in the same manner as <samp>--check-programs</samp>, but
+only for the component <u>component</u>.
+</p>
+
+<p>
+</p>
+
+<p>
+<h3> Listing options</h3>
+</p>
+
+<p>
+Every component contains one or more options.  Options may be gathered
+into option groups to allow the GUI to give visual hints to the user
+about which options are related.
+</p>
+
+<p>
+The command <samp></samp> lists
+all options (and the groups they belong to) in the component
+<u>component</u>, one per line.  <u>component</u> must be the string in
+the field <u>name</u> in the output of the <samp>--list-components</samp>
+command.
+</p>
+
+<p>
+There is one line for each option and each group.  First come all
+options that are not in any group.  Then comes a line describing a
+group.  Then come all options that belong into each group.  Then comes
+the next group and so on.  There does not need to be any group (and in
+this case the output will stop after the last non-grouped option).
+</p>
+
+<p>
+The format of each line is:
+</p>
+
+<p>
+<samp><u>name</u>:<u>flags</u>:<u>level</u>:<u>description</u>:<u>type</u>:<u>alt-type</u>:<u>argname</u>:<u>default</u>:<u>argdef</u>:<u>value</u></samp>
+</p>
+
+<p>
+<ul>
+<li><span class="y2m-item">name</span>
+This field contains a name tag for the group or option.  The name tag
+is used to specify the group or option in all communication with
+<i>gpgconf</i>.  The name tag is to be used <em>verbatim</em>.  It is
+thus not in any escaped format.
+
+</li>
+<li><span class="y2m-item">flags</span>
+The flags field contains an <em>unsigned number</em>.  Its value is the
+OR-wise combination of the following flag values:
+
+</li>
+<ul>
+<li><span class="y2m-item">group <span class="y2m-args">(1)</span></span>
+If this flag is set, this is a line describing a group and not an
+option.
+</li>
+</ul>
+
+The following flag values are only defined for options (that is, if
+the <samp>group</samp> flag is not used).
+
+<ul>
+<li><span class="y2m-item">optional <span class="y2m-args">arg (2)</span></span>
+If this flag is set, the argument is optional.  This is never set for
+<u>type</u> <samp>0</samp> (none) options.
+
+</li>
+<li><span class="y2m-item">list <span class="y2m-args">(4)</span></span>
+If this flag is set, the option can be given multiple times.
+
+</li>
+<li><span class="y2m-item">runtime <span class="y2m-args">(8)</span></span>
+If this flag is set, the option can be changed at runtime.
+
+</li>
+<li><span class="y2m-item">default <span class="y2m-args">(16)</span></span>
+If this flag is set, a default value is available.
+
+</li>
+<li><span class="y2m-item">default <span class="y2m-args">desc (32)</span></span>
+If this flag is set, a (runtime) default is available.  This and the
+<samp>default</samp> flag are mutually exclusive.
+
+</li>
+<li><span class="y2m-item">no <span class="y2m-args">arg desc (64)</span></span>
+If this flag is set, and the <samp>optional arg</samp> flag is set, then the
+option has a special meaning if no argument is given.
+
+</li>
+<li><span class="y2m-item">no <span class="y2m-args">change (128)</span></span>
+If this flag is set, <i>gpgconf</i> ignores requests to change the
+value.  GUI frontends should grey out this option.  Note, that manual
+changes of the configuration files are still possible.
+</li>
+</ul>
+
+<li><span class="y2m-item">level</span>
+This field is defined for options and for groups.  It contains an
+<em>unsigned number</em> that specifies the expert level under which
+this group or option should be displayed.  The following expert levels
+are defined for options (they have analogous meaning for groups):
+
+</li>
+<ul>
+<li><span class="y2m-item">basic <span class="y2m-args">(0)</span></span>
+This option should always be offered to the user.
+
+</li>
+<li><span class="y2m-item">advanced <span class="y2m-args">(1)</span></span>
+This option may be offered to advanced users.
+
+</li>
+<li><span class="y2m-item">expert <span class="y2m-args">(2)</span></span>
+This option should only be offered to expert users.
+
+</li>
+<li><span class="y2m-item">invisible <span class="y2m-args">(3)</span></span>
+This option should normally never be displayed, not even to expert
+users.
+
+</li>
+<li><span class="y2m-item">internal <span class="y2m-args">(4)</span></span>
+This option is for internal use only.  Ignore it.
+</li>
+</ul>
+
+The level of a group will always be the lowest level of all options it
+contains.
+
+<li><span class="y2m-item">description</span>
+This field is defined for options and groups.  The <em>string</em> in
+this field contains a human-readable description of the option or
+group.  It can be displayed to the user of the GUI for informational
+purposes.  It is <em>percent-escaped</em> and <em>localized</em>.
+
+</li>
+<li><span class="y2m-item">type</span>
+This field is only defined for options.  It contains an <em>unsigned
+number</em> that specifies the type of the option's argument, if any.  The
+following types are defined:
+
+Basic types:
+
+</li>
+<ul>
+<li><span class="y2m-item">none <span class="y2m-args">(0)</span></span>
+No argument allowed.
+
+</li>
+<li><span class="y2m-item">string <span class="y2m-args">(1)</span></span>
+An <em>unformatted string</em>.
+
+</li>
+<li><span class="y2m-item">int32 <span class="y2m-args">(2)</span></span>
+A <em>signed number</em>.
+
+</li>
+<li><span class="y2m-item">uint32 <span class="y2m-args">(3)</span></span>
+An <em>unsigned number</em>.
+</li>
+</ul>
+
+Complex types:
+
+<ul>
+<li><span class="y2m-item">pathname <span class="y2m-args">(32)</span></span>
+A <em>string</em> that describes the pathname of a file.  The file does
+not necessarily need to exist.
+
+</li>
+<li><span class="y2m-item">ldap <span class="y2m-args">server (33)</span></span>
+A <em>string</em> that describes an LDAP server in the format:
+
+<samp><u>hostname</u>:<u>port</u>:<u>username</u>:<u>password</u>:<u>base_dn</u></samp>
+
+</li>
+<li><span class="y2m-item">key <span class="y2m-args">fingerprint (34)</span></span>
+A <em>string</em> with a 40 digit fingerprint specifying a certificate.
+
+</li>
+<li><span class="y2m-item">pub <span class="y2m-args">key (35)</span></span>
+A <em>string</em> that describes a certificate by user ID, key ID or
+fingerprint.
+
+</li>
+<li><span class="y2m-item">sec <span class="y2m-args">key (36)</span></span>
+A <em>string</em> that describes a certificate with a key by user ID,
+key ID or fingerprint.
+
+</li>
+<li><span class="y2m-item">alias <span class="y2m-args">list (37)</span></span>
+A <em>string</em> that describes an alias list, like the one used with
+gpg's group option.  The list consists of a key, an equal sign and space
+separated values.
+</li>
+</ul>
+
+More types will be added in the future.  Please see the <u>alt-type</u>
+field for information on how to cope with unknown types.
+
+<li><span class="y2m-item">alt-type</span>
+This field is identical to <u>type</u>, except that only the types
+<samp>0</samp> to <samp>31</samp> are allowed.  The GUI is expected to present the
+user the option in the format specified by <u>type</u>.  But if the
+argument type <u>type</u> is not supported by the GUI, it can still
+display the option in the more generic basic type <u>alt-type</u>.  The
+GUI must support all the defined basic types to be able to display all
+options.  More basic types may be added in future versions.  If the
+GUI encounters a basic type it doesn't support, it should report an
+error and abort the operation.
+
+</li>
+<li><span class="y2m-item">argname</span>
+This field is only defined for options with an argument type
+<u>type</u> that is not <samp>0</samp>.  In this case it may contain a
+<em>percent-escaped</em> and <em>localized string</em> that gives a short
+name for the argument.  The field may also be empty, though, in which
+case a short name is not known.
+
+</li>
+<li><span class="y2m-item">default</span>
+This field is defined only for options for which the <samp>default</samp> or
+<samp>default desc</samp> flag is set.  If the <samp>default</samp> flag is set,
+its format is that of an <em>option argument</em> (Format
+conventions, for details).  If the default value is empty, then no
+default is known.  Otherwise, the value specifies the default value
+for this option.  If the <samp>default desc</samp> flag is set, the field is
+either empty or contains a description of the effect if the option is
+not given.
+
+</li>
+<li><span class="y2m-item">argdef</span>
+This field is defined only for options for which the <samp>optional
+arg</samp> flag is set.  If the <samp>no arg desc</samp> flag is not set, its
+format is that of an <em>option argument</em> (Format
+conventions, for details).  If the default value is empty, then no
+default is known.  Otherwise, the value specifies the default argument
+for this option.  If the <samp>no arg desc</samp> flag is set, the field is
+either empty or contains a description of the effect of this option if
+no argument is given.
+
+</li>
+<li><span class="y2m-item">value</span>
+This field is defined only for options.  Its format is that of an
+<em>option argument</em>.  If it is empty, then the option is not
+explicitly set in the current configuration, and the default applies
+(if any).  Otherwise, it contains the current value of the option.
+Note that this field is also meaningful if the option itself does not
+take a real argument (in this case, it contains the number of times
+the option appears).
+</li>
+</ul>
+</p>
+
+<p>
+</p>
+
+<p>
+<h3> Changing options</h3>
+</p>
+
+<p>
+The command to change the options of the component <u>component</u> to the
+specified values.  <u>component</u> must be the string in the field
+<u>name</u> in the output of the <samp>--list-components</samp> command.  You
+have to provide the options that shall be changed in the following
+format on standard input:
+</p>
+
+<p>
+<samp><u>name</u>:<u>flags</u>:<u>new-value</u></samp>
+</p>
+
+<p>
+<ul>
+<li><span class="y2m-item">name</span>
+This is the name of the option to change.  <u>name</u> must be the
+string in the field <u>name</u> in the output of the
+<samp>--list-options</samp> command.
+
+</li>
+<li><span class="y2m-item">flags</span>
+The flags field contains an <em>unsigned number</em>.  Its value is the
+OR-wise combination of the following flag values:
+
+</li>
+<ul>
+<li><span class="y2m-item">default <span class="y2m-args">(16)</span></span>
+If this flag is set, the option is deleted and the default value is
+used instead (if applicable).
+</li>
+</ul>
+
+<li><span class="y2m-item">new-value</span>
+The new value for the option.  This field is only defined if the
+<samp>default</samp> flag is not set.  The format is that of an <em>option
+argument</em>.  If it is empty (or the field is omitted), the default
+argument is used (only allowed if the argument is optional for this
+option).  Otherwise, the option will be set to the specified value.
+</li>
+</ul>
+</p>
+
+<p>
+
+The output of the command is the same as that of
+<samp>--check-options</samp> for the modified configuration file.
+</p>
+
+<p>
+Examples:
+</p>
+
+<p>
+To set the force option, which is of basic type <samp>none (0)</samp>:
+</p>
+
+<p>
+
+<pre>
+$ echo 'force:0:1' | gpgconf --change-options dirmngr
+</pre>
+</p>
+
+<p>
+To delete the force option:
+</p>
+
+<p>
+
+<pre>
+$ echo 'force:16:' | gpgconf --change-options dirmngr
+</pre>
+</p>
+
+<p>
+The <samp>--runtime</samp> option can influence when the changes take
+effect.
+</p>
+
+<p>
+</p>
+
+<p>
+<h3> Listing global options</h3>
+</p>
+
+<p>
+Some legacy applications look at the global configuration file for the
+gpgconf tool itself; this is the file gpgconf.conf.  Modern
+applications should not use it but use per component global
+configuration files which are more flexible than the
+gpgconf.conf.  Using both files is not suggested.
+</p>
+
+<p>
+The colon separated listing format is record oriented and uses the first
+field to identify the record type:
+</p>
+
+<p>
+<ul>
+<li><span class="y2m-item">k</span>
+This describes a key record to start the definition of a new ruleset for
+a user/group.  The format of a key record is:
+
+  <samp>k:<u>user</u>:<u>group</u>:</samp>
+
+</li>
+<ul>
+<li><span class="y2m-item">user</span>
+This is the user field of the key.  It is percent escaped.  See the
+definition of the gpgconf.conf format for details.
+
+</li>
+<li><span class="y2m-item">group</span>
+This is the group field of the key.  It is percent escaped.
+</li>
+</ul>
+
+<li><span class="y2m-item">r</span>
+This describes a rule record. All rule records up to the next key record
+make up a rule set for that key.  The format of a rule record is:
+
+  <samp>r:::<u>component</u>:<u>option</u>:<u>flag</u>:<u>value</u>:</samp>
+
+</li>
+<ul>
+<li><span class="y2m-item">component</span>
+This is the component part of a rule.  It is a plain string.
+
+</li>
+<li><span class="y2m-item">option</span>
+This is the option part of a rule.  It is a plain string.
+
+</li>
+<li><span class="y2m-item">flag</span>
+This is the flags part of a rule.  There may be only one flag per rule
+but by using the same component and option, several flags may be
+assigned to an option.  It is a plain string.
+
+</li>
+<li><span class="y2m-item">value</span>
+This is the optional value for the option.  It is a percent escaped
+string with a single quotation mark to indicate a string.  The quotation
+mark is only required to distinguish between no value specified and an
+empty string.
+</li>
+</ul>
+
+</ul>
+</p>
+
+<p>
+
+Unknown record types should be ignored.  Note that there is intentionally
+no feature to change the global option file through <i>gpgconf</i>.
+</p>
+
+<p>
+</p>
+
+<p>
+<h3> Get and compare software versions.</h3>
+</p>
+
+<p>
+The GnuPG Project operates a server to query the current versions of
+software packages related to GnuPG.  <i>gpgconf</i> can be used to
+access this online database.  To allow for offline operations, this
+feature works by having <i>dirmngr</i> download a file from
+<samp>https://versions.gnupg.org</samp>, checking the signature of that file
+and storing the file in the GnuPG home directory.  If
+<i>gpgconf</i> is used and <i>dirmngr</i> is running, it may ask
+<i>dirmngr</i> to refresh that file before itself uses the file.
+</p>
+
+<p>
+The command <samp>--query-swdb</samp> returns information for the given
+package in a colon delimited format:
+</p>
+
+<p>
+<ul>
+
+<li><span class="y2m-item">name</span>
+This is the name of the package as requested.  Note that "gnupg" is a
+special name which is replaced by the actual package implementing this
+version of GnuPG.  For this name it is also not required to specify a
+version because <i>gpgconf</i> takes its own version in this case.
+
+</li>
+<li><span class="y2m-item">iversion</span>
+The currently installed version or an empty string.  The value is
+taken from the command line argument but may be provided by gpg
+if not given.
+
+</li>
+<li><span class="y2m-item">status</span>
+The status of the software package according to this table:
+</li>
+<ul>
+<li><span class="y2m-item">-</span>
+No information available.  This is either because no current version
+has been specified or due to an error.
+</li>
+<li><span class="y2m-item">?</span>
+The given name is not known in the online database.
+</li>
+<li><span class="y2m-item">u</span>
+An update of the software is available.
+</li>
+<li><span class="y2m-item">c</span>
+The installed version of the software is current.
+</li>
+<li><span class="y2m-item">n</span>
+The installed version is already newer than the released version.
+</li>
+</ul>
+
+<li><span class="y2m-item">urgency</span>
+If the value (the empty string should be considered as zero) is
+greater than zero an important update is available.
+
+</li>
+<li><span class="y2m-item">error</span>
+This returns an <i>gpg-error</i> error code to distinguish between
+various failure modes.
+
+</li>
+<li><span class="y2m-item">filedate</span>
+This gives the date of the file with the version numbers in standard
+ISO format (<samp>yyyymmddThhmmss</samp>).  The date has been extracted by
+<i>dirmngr</i> from the signature of the file.
+
+</li>
+<li><span class="y2m-item">verified</span>
+This gives the date in ISO format the file was downloaded.  This value
+can be used to evaluate the freshness of the information.
+
+</li>
+<li><span class="y2m-item">version</span>
+This returns the version string for the requested software from the
+file.
+
+</li>
+<li><span class="y2m-item">reldate</span>
+This returns the release date in ISO format.
+
+</li>
+<li><span class="y2m-item">size</span>
+This returns the size of the package as decimal number of bytes.
+
+</li>
+<li><span class="y2m-item">hash</span>
+This returns a hexified SHA-2 hash of the package.
+
+</li>
+</ul>
+</p>
+
+<p>
+
+More fields may be added in future to the output.
+</p>
+
+<p>
+</p>
+
+<p>
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">FILES</h2>
+
+<p></p>
+
+<p>
+<ul>
+
+<li><span class="y2m-item">gpgconf.ctl</span>
+  Under Unix gpgconf.ctl may be used to change some of the
+  compiled in directories where the GnuPG components are expected.  This
+  file is expected in the same directory as gpgconf.  The
+  physical installation directories are evaluated and no symlinks.
+  Blank lines and lines starting with pound sign are ignored in the
+  file.  The keywords must be followed by optional white space, an equal
+  sign, optional white space, and the value.  Environment variables are
+  substituted in standard shell manner, the final value must start with
+  a slash, trailing slashes are stripped.  Valid keywords are
+  <samp>rootdir</samp>, <samp>sysconfdir</samp>, <samp>socketdir</samp>, and
+  <samp>.enable</samp>.  No errors are printed for unknown keywords.  The
+  <samp>.enable</samp> keyword is special: if the keyword is used and its
+  value evaluates to true the entire file is ignored.
+
+  Under Windows this file is used to install GnuPG as a portable
+  application.  An empty file named gpgconf.ctl is expected in
+  the same directory as the tool gpgconf.exe or the file must
+  have a keyword <samp>portable</samp> with the value true.  The root of the
+  installation is then that directory; or, if gpgconf.exe has
+  been installed directly below a directory named bin, its parent
+  directory.  You also need to make sure that the following directories
+  exist and are writable: ROOT/home for the GnuPG home and
+  ROOT/home/itodoro/projects/ibm_meta_testing/ibmdir/gpgport/install/var/cache/gnupg for internal cache files.
+
+  On both platforms the keyword <samp>gnupg</samp> can be used to change the
+  standard home directory.  For example a value of "gnupg-vsd" will
+  change the default home directory on unix from ~/.gnupg to
+  ~/.gnupg-vsd.  The socket directory is changed accordingly
+  unless the <samp>socketdir</samp> keyword has been used.  On Windows the
+  Registry keys are modified as well.
+
+
+</li>
+<li><span class="y2m-item">/etc/gnupg/gpgconf.conf</span>
+  If this file exists, it is processed as a global configuration file.
+  This is a legacy mechanism which should not be used together with
+  the modern global per component configuration files.  A commented
+  example can be found in the examples directory of the
+  distribution.
+
+</li>
+<li><span class="y2m-item">@var{GNUPGHOME}/swdb.lst</span>
+  A file with current software versions.  <i>dirmngr</i> creates
+  this file on demand from an online resource.
+
+</li>
+</ul>
+</p>
+
+<p>
+</p>
+
+<p>
+</div>
+<div class="y2m-section">
+<h2 class="y2m-sh">SEE ALSO</h2>
+
+<p><i><a href="gpg.1.html">gpg</a>(1)</i>,
+<i><a href="gpgsm.1.html">gpgsm</a>(1)</i>,
+<i><a href="gpg-agent.1.html">gpg-agent</a>(1)</i>,
+<i><a href="scdaemon.1.html">scdaemon</a>(1)</i>,
+<i><a href="dirmngr.1.html">dirmngr</a>(1)</i>
+</p>
+
+<p>
+The full documentation for this tool is maintained as a Texinfo manual.
+If GnuPG and the info program are properly installed at your site, the
+command
+</p>
+
+<p>
+
+<pre>
+info gnupg
+</pre>
+</p>
+
+<p>
+should give you access to the complete manual including a menu structure
+and an index.
+</p>
+
+<p>
+</p>
+
+<p>
+</p>
+
+<p>
+
+</div>
+<p class="y2m y2m-footer"><span class="y2m-left">GnuPG 2.5.2</span> <span class="y2m-center">2024-11-22</span> <span class="y2m-right">GPGCONF(1)</span></p>
+</div><!-- class y2m -->
+</div><!-- end content -->
+</div><!-- end wrapper -->
+</body>
+</html>

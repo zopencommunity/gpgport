@@ -1,0 +1,66 @@
+# Description-p12  - Machine readable description of our P12 test vectors
+# The Cert line gives the SHA1 fingerprint of the certificate
+# The Key line gives a hash of the key parameters as returned by minip12.c
+
+Name: ov-user.p12
+Desc: Private test key from www.openvalidation.org
+Pass: start
+Cert: 4753a910e0c8b4caa8663ca0e4273a884eb5397d
+Key:  93be89edd11214ab74280d988a665b6beef876c5
+
+Name: ov-server.p12
+Desc: Private test key from www.openvalidation.org
+Pass: start
+Cert: 1997fadf6cc1af03e4845c4cba38fb2397315143
+Key:  63b1d7233e75c3a462cb4b8ea3ad285e8ecba91c
+
+Name: opensc-test.p12
+Desc: PKCS#12 key and certificates taken from OpenSC (RC2+3DES,PKCS#8)
+Pass: password
+Cert: 115abfc3ae554092a57ade74177fedf9459af5d2
+Cert: a0d6d318952c313ff8c33cd3f629647ff1de76b3
+Key:  5a36c61706367ecdb52e8779e3a32bbac1069fa1
+
+Name: t5793-openssl.pfx
+Desc: self-signed key issued keys
+Pass: test
+Cert: 80348a438e4b803b99e708da0b7fdd0659dedd15
+Key:  c271e44ab4fb19ca1aae71102ea4d7292ccc981d
+
+Name: t5793-test.pfx
+Desc: QuaVadis format of t5793-openssl
+Pass: test
+Cert: 80348a438e4b803b99e708da0b7fdd0659dedd15
+Key:  c271e44ab4fb19ca1aae71102ea4d7292ccc981d
+
+Name: edward.tester@demo.gnupg.com.p12
+Desc: GnuPG exported Brainpool certificate
+Pass: abc,123456
+Cert: ff810b9281a43c394aa138e9c7fd4c0193216fa6
+Key:  94c6d0b067370a8f2a09ae43cfe8d700bbd61e75
+
+Name: nistp256-openssl-self-signed.p12
+Desc: OpenSSL generated self-signed nistp256 key+cert
+Pass: abc
+Cert: 5cea0c5bf09ccd92535267c662fc098f6c81c27e
+Key:  3cb2fba95d1976df69eb7aa8c65ac5354e15af32
+
+Name: t6752-ov-user-ff.p12
+Desc: Mozilla generated with a surplus octet string container
+Pass: start
+Cert: 4753a910e0c8b4caa8663ca0e4273a884eb5397d
+Key:  93be89edd11214ab74280d988a665b6beef876c5
+
+Name: credential_private_encrypted_AES256.p12
+Desc: AES256 encrypted P12 file from T6940
+Pass: qeFGds84/Sf0eKkJwcp6
+Cert: 20f65740b4a15bac6d6a299026756088f7604937,cbb4b26f93cfd9715ac9fa43440470df9395571b
+Key:  37eedaaf317edb69029eed79f69dd479fb10bf08
+
+Name: credential_private_encrypted_3DES.p12
+Desc: 3DES encrypted P12 file from T6940
+Pass: qeFGds84/Sf0eKkJwcp6
+Cert: 20f65740b4a15bac6d6a299026756088f7604937,cbb4b26f93cfd9715ac9fa43440470df9395571b
+Key:  37eedaaf317edb69029eed79f69dd479fb10bf08
+
+# eof #
