@@ -1,0 +1,15 @@
+diff --git a/common/t-exectool.c b/common/t-exectool.c
+index e1fffdc..f15e9db 100644
+--- a/common/t-exectool.c
++++ b/common/t-exectool.c
+@@ -191,6 +191,10 @@ test_catting_cat (void)
+     }
+   es_fclose (in);
+ 
++#ifdef __MVS__
++  __e2a_l(reference, reference_len); //Workaroud for binary file conversion
++#endif
++
+   if (verbose)
+     fprintf (stderr, "Executing %s %s...\n", argv[0], argv[1]);
+ 
