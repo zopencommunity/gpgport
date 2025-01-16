@@ -7,7 +7,7 @@ index e1fffdc..f15e9db 100644
    es_fclose (in);
  
 +#ifdef __MVS__
-+  __e2a_l(reference, reference_len); //Workaroud for binary file conversion
++  __e2a_l(reference, reference_len); //Workaround for binary file conversion
 +#endif
 +
    if (verbose)
