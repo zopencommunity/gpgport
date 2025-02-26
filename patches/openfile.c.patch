@@ -1,5 +1,5 @@
 diff --git a/g10/openfile.c b/g10/openfile.c
-index 42d4708..6da1b3b 100644
+index 42d4708..7689c2c 100644
 --- a/g10/openfile.c
 +++ b/g10/openfile.c
 @@ -183,7 +183,6 @@ open_outfile (gnupg_fd_t out_fd, const char *iname, int mode,
@@ -18,11 +18,12 @@ index 42d4708..6da1b3b 100644
        rc = 0;
        while ( !overwrite_filep (name) )
          {
-@@ -299,8 +297,18 @@ open_outfile (gnupg_fd_t out_fd, const char *iname, int mode,
+@@ -299,8 +297,20 @@ open_outfile (gnupg_fd_t out_fd, const char *iname, int mode,
      }
  
    if (*a)
 +  {
++#ifdef __MVS__
 +	if (mode == 0 || mode == 2) {
 +          int fd = iobuf_get_fd(*a);
 +
@@ -32,6 +33,7 @@ index 42d4708..6da1b3b 100644
 +	      __setfdbinary(fd);
 +    	    }
 +	}
++#endif
      iobuf_ioctl (*a, IOBUF_IOCTL_NO_CACHE, 1, NULL);
 -
 +  }
