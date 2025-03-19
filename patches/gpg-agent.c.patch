@@ -1,8 +1,8 @@
 diff --git a/agent/gpg-agent.c b/agent/gpg-agent.c
-index 5b1f155..4f42040 100644
+index 5b1a124..15a07cc 100644
 --- a/agent/gpg-agent.c
 +++ b/agent/gpg-agent.c
-@@ -1892,12 +1892,13 @@ agent_libgcrypt_progress_cb (void *data, const char *what, int printchar,
+@@ -1900,12 +1900,13 @@ agent_libgcrypt_progress_cb (void *data, const char *what, int printchar,
                               int current, int total)
  {
    struct progress_dispatch_s *dispatch;
@@ -18,28 +18,28 @@ index 5b1f155..4f42040 100644
        break;
    if (dispatch && dispatch->cb)
      dispatch->cb (dispatch->ctrl, what, printchar, current, total);
-@@ -1910,10 +1911,10 @@ static void
+@@ -1918,10 +1919,11 @@ static void
  unregister_progress_cb (void)
  {
    struct progress_dispatch_s *dispatch;
 -  npth_t mytid = npth_self ();
--
 +  npth_t mytid;
 +  mytid.__  = npth_self ().__;
+ 
    for (dispatch = progress_dispatch_list; dispatch; dispatch = dispatch->next)
 -    if (dispatch->ctrl && dispatch->tid == mytid)
 +    if (dispatch->ctrl && dispatch->tid.__ == mytid.__)
        break;
    if (dispatch)
      {
-@@ -1931,12 +1932,12 @@ agent_set_progress_cb (void (*cb)(ctrl_t ctrl, const char *what,
+@@ -1939,12 +1941,13 @@ agent_set_progress_cb (void (*cb)(ctrl_t ctrl, const char *what,
                         ctrl_t ctrl)
  {
    struct progress_dispatch_s *dispatch, *firstfree;
 -  npth_t mytid = npth_self ();
--
 +  npth_t mytid;
 +  mytid.__  = npth_self ().__;
+ 
    firstfree = NULL;
    for (dispatch = progress_dispatch_list; dispatch; dispatch = dispatch->next)
      {
@@ -48,7 +48,7 @@ index 5b1f155..4f42040 100644
          break;
        if (!dispatch->ctrl && !firstfree)
          firstfree = dispatch;
-@@ -2845,12 +2846,12 @@ do_start_connection_thread (ctrl_t ctrl)
+@@ -2855,12 +2858,12 @@ do_start_connection_thread (ctrl_t ctrl)
    agent_init_default_ctrl (ctrl);
    if (opt.verbose > 1 && !DBG_IPC)
      log_info (_("handler 0x%lx for fd %d started\n"),
@@ -63,34 +63,34 @@ index 5b1f155..4f42040 100644
  
    agent_deinit_default_ctrl (ctrl);
    xfree (ctrl);
-@@ -2868,7 +2869,7 @@ start_connection_thread_std (void *arg)
+@@ -2878,7 +2881,7 @@ start_connection_thread_std (void *arg)
    if (check_nonce (ctrl, &socket_nonce))
      {
-       log_error ("handler 0x%lx nonce check FAILED\n",
--                 (unsigned long) npth_self());
-+                 (unsigned long) npth_self().__);
+       log_error ("handler 0x%lx for fd %d FAILED nonce check\n",
+-                 (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++                 (unsigned long) npth_self().__, FD_DBG (ctrl->thread_startup.fd));
+       assuan_sock_close (ctrl->thread_startup.fd);
        return NULL;
      }
- 
-@@ -2885,7 +2886,7 @@ start_connection_thread_extra (void *arg)
+@@ -2896,7 +2899,7 @@ start_connection_thread_extra (void *arg)
    if (check_nonce (ctrl, &socket_nonce_extra))
      {
-       log_error ("handler 0x%lx nonce check FAILED\n",
--                 (unsigned long) npth_self());
-+                 (unsigned long) npth_self().__);
+       log_error ("handler 0x%lx for fd %d FAILED nonce check\n",
+-                 (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++                 (unsigned long) npth_self().__, FD_DBG (ctrl->thread_startup.fd));
+       assuan_sock_close (ctrl->thread_startup.fd);
        return NULL;
      }
- 
-@@ -2903,7 +2904,7 @@ start_connection_thread_browser (void *arg)
+@@ -2915,7 +2918,7 @@ start_connection_thread_browser (void *arg)
    if (check_nonce (ctrl, &socket_nonce_browser))
      {
-       log_error ("handler 0x%lx nonce check FAILED\n",
--                 (unsigned long) npth_self());
-+                 (unsigned long) npth_self().__);
+       log_error ("handler 0x%lx for fd %d FAILED nonce check\n",
+-                 (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++                 (unsigned long) npth_self().__, FD_DBG (ctrl->thread_startup.fd));
+       assuan_sock_close (ctrl->thread_startup.fd);
        return NULL;
      }
- 
-@@ -2925,12 +2926,12 @@ start_connection_thread_ssh (void *arg)
+@@ -2941,12 +2944,12 @@ start_connection_thread_ssh (void *arg)
    agent_init_default_ctrl (ctrl);
    if (opt.verbose)
      log_info (_("ssh handler 0x%lx for fd %d started\n"),
