@@ -29,6 +29,19 @@ index ba37a775e..c05e78f61 100644
      {
        log_debug ("agent_popup_message_stop called with no active popup\n");
        return;
+diff --git a/agent/command.c b/agent/command.c
+index ff018dde7..1136c71d9 100644
+--- a/agent/command.c
++++ b/agent/command.c
+@@ -4489,7 +4489,7 @@ start_command_handler (ctrl_t ctrl, gnupg_fd_t listen_fd, gnupg_fd_t fd)
+            * and thus we silence the error.  */
+           if (listen_fd == GNUPG_INVALID_FD && fd == GNUPG_INVALID_FD)
+             ;
+-#ifdef HAVE_W32_SYSTEM
++#if defined(HAVE_W32_SYSTEM) || defined (__MVS__)
+           else if (gpg_err_code (rc) == GPG_ERR_ASS_GENERAL)
+             ;
+ #endif
 diff --git a/agent/gpg-agent.c b/agent/gpg-agent.c
 index 5b1a124e0..71ee07712 100644
 --- a/agent/gpg-agent.c
@@ -232,3 +245,92 @@ index 1c1c892ca..fae12cf2d 100644
         LIBUSB_NAME=
         LIBUSB_LIBS=
         LIBUSB_CPPFLAGS=
+diff --git a/dirmngr/dns.c b/dirmngr/dns.c
+index f023e7395..bbe02a08b 100644
+--- a/dirmngr/dns.c
++++ b/dirmngr/dns.c
+@@ -1188,7 +1188,7 @@ static size_t dns_recv(int fd, void *dst, size_t lim, int flags, dns_error_t *er
+ } /* dns_recv() */
+ 
+ static size_t dns_send_nopipe(int fd, const void *src, size_t len, int flags, dns_error_t *_error) {
+-#if _WIN32 || !defined SIGPIPE || defined SO_NOSIGPIPE
++#if _WIN32 || !defined SIGPIPE || defined SO_NOSIGPIPE || defined __MVS__
+ 	return dns_send(fd, src, len, flags, _error);
+ #elif defined MSG_NOSIGNAL
+ 	return dns_send(fd, src, len, (flags|MSG_NOSIGNAL), _error);
+diff --git a/dirmngr/server.c b/dirmngr/server.c
+index 66a74a890..63ed8f7dc 100644
+--- a/dirmngr/server.c
++++ b/dirmngr/server.c
+@@ -397,7 +397,7 @@ is_tor_running (ctrl_t ctrl)
+ static gpg_error_t
+ check_owner_permission (assuan_context_t ctx, const char *failtext)
+ {
+-#ifdef HAVE_W32_SYSTEM
++#ifdef HAVE_W32_SYSTEM || defined(__MVS__)
+   /* Under Windows the dirmngr is always run under the control of the
+      user.  */
+   (void)ctx;
+@@ -3268,7 +3268,7 @@ start_command_handler (assuan_fd_t fd, unsigned int session_id)
+           break;
+         }
+ 
+-#ifndef HAVE_W32_SYSTEM
++#if !defined(HAVE_W32_SYSTEM) && !defined(__MVS__)
+       if (opt.verbose)
+         {
+ 	  assuan_peercred_t peercred;
+diff --git a/g10/decrypt.c b/g10/decrypt.c
+index e232c188f..2d755130f 100644
+--- a/g10/decrypt.c
++++ b/g10/decrypt.c
+@@ -62,7 +62,13 @@ decrypt_message (ctrl_t ctrl, const char *filename, strlist_t remusr)
+ 
+   /* Open the message file.  */
+   fp = iobuf_open (filename);
++#ifdef __MVS__
++  int fd =iobuf_get_fd (fp);
++   __disableautocvt(fd);
++  if (fp && is_secured_file (fd))
++#elif
+   if (fp && is_secured_file (iobuf_get_fd (fp)))
++#endif
+     {
+       iobuf_close (fp);
+       fp = NULL;
+diff --git a/g10/openfile.c b/g10/openfile.c
+index 42d470889..8607f277c 100644
+--- a/g10/openfile.c
++++ b/g10/openfile.c
+@@ -299,8 +299,15 @@ open_outfile (gnupg_fd_t out_fd, const char *iname, int mode,
+     }
+ 
+   if (*a)
++  {
++#ifdef __MVS__
++	if ((mode == 0 && restrictedperm != 1) || mode == 2) {
++          int fd = iobuf_get_fd(*a);
++          __setfdbinary(fd);
++        }
++#endif
+     iobuf_ioctl (*a, IOBUF_IOCTL_NO_CACHE, 1, NULL);
+-
++  }
+   return rc;
+ }
+ 
+diff --git a/tests/gpgscm/ffi.c b/tests/gpgscm/ffi.c
+index 21ec6a057..b74eee48e 100644
+--- a/tests/gpgscm/ffi.c
++++ b/tests/gpgscm/ffi.c
+@@ -53,6 +53,10 @@
+ #include "ffi.h"
+ #include "ffi-private.h"
+ 
++#ifdef __MVS__
++#include <sys/time.h>
++#endif
++
+ /* For use in nice error messages.  */
+ static const char *
+ ordinal_suffix (int n)
