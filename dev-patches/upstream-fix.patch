@@ -1,0 +1,234 @@
+diff --git a/agent/call-pinentry.c b/agent/call-pinentry.c
+index ba37a775e..c05e78f61 100644
+--- a/agent/call-pinentry.c
++++ b/agent/call-pinentry.c
+@@ -130,7 +130,7 @@ agent_query_dump_state (void)
+ {
+   log_info ("agent_query_dump_state: entry_ctx=%p pid=%ld popup_tid=%lx\n",
+             entry_ctx, (long)assuan_get_pid (entry_ctx),
+-            (unsigned long)popup_tid);
++            (unsigned long)get_npth_id(popup_tid));
+ }
+ 
+ /* Called to make sure that a popup window owned by the current
+@@ -138,7 +138,7 @@ agent_query_dump_state (void)
+ void
+ agent_reset_query (ctrl_t ctrl)
+ {
+-  if (entry_ctx && popup_tid && ctrl->pinentry_active)
++  if (entry_ctx && get_npth_id(popup_tid) && ctrl->pinentry_active)
+     {
+       agent_popup_message_stop (ctrl);
+     }
+@@ -2119,7 +2119,7 @@ agent_popup_message_stop (ctrl_t ctrl)
+   if (ctrl->pinentry_mode == PINENTRY_MODE_LOOPBACK)
+     return;
+ 
+-  if (!popup_tid || !entry_ctx)
++  if (!get_npth_id(popup_tid) || !entry_ctx)
+     {
+       log_debug ("agent_popup_message_stop called with no active popup\n");
+       return;
+diff --git a/agent/gpg-agent.c b/agent/gpg-agent.c
+index 5b1a124e0..71ee07712 100644
+--- a/agent/gpg-agent.c
++++ b/agent/gpg-agent.c
+@@ -62,7 +62,6 @@
+ #include "../common/comopt.h"
+ #include "../common/init.h"
+ 
+-
+ enum cmd_and_opt_values
+ { aNull = 0,
+   oCsh		  = 'c',
+@@ -1900,12 +1899,11 @@ agent_libgcrypt_progress_cb (void *data, const char *what, int printchar,
+                              int current, int total)
+ {
+   struct progress_dispatch_s *dispatch;
+-  npth_t mytid = npth_self ();
+-
++  npth_t mytid = get_npth_self();
+   (void)data;
+ 
+   for (dispatch = progress_dispatch_list; dispatch; dispatch = dispatch->next)
+-    if (dispatch->ctrl && dispatch->tid == mytid)
++    if (dispatch->ctrl && npth_equal(dispatch->tid, mytid)) 
+       break;
+   if (dispatch && dispatch->cb)
+     dispatch->cb (dispatch->ctrl, what, printchar, current, total);
+@@ -1918,10 +1916,9 @@ static void
+ unregister_progress_cb (void)
+ {
+   struct progress_dispatch_s *dispatch;
+-  npth_t mytid = npth_self ();
+-
++  npth_t mytid = get_npth_self();
+   for (dispatch = progress_dispatch_list; dispatch; dispatch = dispatch->next)
+-    if (dispatch->ctrl && dispatch->tid == mytid)
++    if (dispatch->ctrl && npth_equal(dispatch->tid, mytid))
+       break;
+   if (dispatch)
+     {
+@@ -1939,12 +1936,12 @@ agent_set_progress_cb (void (*cb)(ctrl_t ctrl, const char *what,
+                        ctrl_t ctrl)
+ {
+   struct progress_dispatch_s *dispatch, *firstfree;
+-  npth_t mytid = npth_self ();
++  npth_t mytid = get_npth_self();
+ 
+   firstfree = NULL;
+   for (dispatch = progress_dispatch_list; dispatch; dispatch = dispatch->next)
+     {
+-      if (dispatch->ctrl && dispatch->tid == mytid)
++      if (dispatch->ctrl && npth_equal(dispatch->tid, mytid))
+         break;
+       if (!dispatch->ctrl && !firstfree)
+         firstfree = dispatch;
+@@ -2855,12 +2852,12 @@ do_start_connection_thread (ctrl_t ctrl)
+   agent_init_default_ctrl (ctrl);
+   if (opt.verbose > 1 && !DBG_IPC)
+     log_info (_("handler 0x%lx for fd %d started\n"),
+-              (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++              (unsigned long) get_npth_self_id(), FD_DBG (ctrl->thread_startup.fd));
+ 
+   start_command_handler (ctrl, GNUPG_INVALID_FD, ctrl->thread_startup.fd);
+   if (opt.verbose > 1 && !DBG_IPC)
+     log_info (_("handler 0x%lx for fd %d terminated\n"),
+-              (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++              (unsigned long) get_npth_self_id(), FD_DBG (ctrl->thread_startup.fd));
+ 
+   agent_deinit_default_ctrl (ctrl);
+   xfree (ctrl);
+@@ -2878,7 +2875,7 @@ start_connection_thread_std (void *arg)
+   if (check_nonce (ctrl, &socket_nonce))
+     {
+       log_error ("handler 0x%lx for fd %d FAILED nonce check\n",
+-                 (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++                 (unsigned long) get_npth_self_id(), FD_DBG (ctrl->thread_startup.fd));
+       assuan_sock_close (ctrl->thread_startup.fd);
+       return NULL;
+     }
+@@ -2896,7 +2893,7 @@ start_connection_thread_extra (void *arg)
+   if (check_nonce (ctrl, &socket_nonce_extra))
+     {
+       log_error ("handler 0x%lx for fd %d FAILED nonce check\n",
+-                 (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++                 (unsigned long) get_npth_self_id(), FD_DBG (ctrl->thread_startup.fd));
+       assuan_sock_close (ctrl->thread_startup.fd);
+       return NULL;
+     }
+@@ -2915,7 +2912,7 @@ start_connection_thread_browser (void *arg)
+   if (check_nonce (ctrl, &socket_nonce_browser))
+     {
+       log_error ("handler 0x%lx for fd %d FAILED nonce check\n",
+-                 (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++                 (unsigned long) get_npth_self_id(), FD_DBG (ctrl->thread_startup.fd));
+       assuan_sock_close (ctrl->thread_startup.fd);
+       return NULL;
+     }
+@@ -2941,12 +2938,12 @@ start_connection_thread_ssh (void *arg)
+   agent_init_default_ctrl (ctrl);
+   if (opt.verbose)
+     log_info (_("ssh handler 0x%lx for fd %d started\n"),
+-              (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++              (unsigned long) get_npth_self_id(), FD_DBG (ctrl->thread_startup.fd));
+ 
+   start_command_handler_ssh (ctrl, ctrl->thread_startup.fd);
+   if (opt.verbose)
+     log_info (_("ssh handler 0x%lx for fd %d terminated\n"),
+-              (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
++              (unsigned long) get_npth_self_id(), FD_DBG (ctrl->thread_startup.fd));
+ 
+   agent_deinit_default_ctrl (ctrl);
+   xfree (ctrl);
+diff --git a/common/call-gpg.c b/common/call-gpg.c
+index 75943a315..de96051f7 100644
+--- a/common/call-gpg.c
++++ b/common/call-gpg.c
+@@ -416,8 +416,15 @@ _gpg_encrypt (ctrl_t ctrl,
+   assuan_context_t ctx = NULL;
+   int outbound_fds[2] = { -1, -1 };
+   int inbound_fds[2]  = { -1, -1 };
++#ifdef __MVS__
++  npth_t writer_thread;
++  writer_thread.__ = 0;
++  npth_t reader_thread;
++  reader_thread.__ = 0;
++#elif
+   npth_t writer_thread = (npth_t)0;
+   npth_t reader_thread = (npth_t)0;
++#endif
+   gpg_error_t writer_err, reader_err;
+   char line[ASSUAN_LINELENGTH];
+   strlist_t sl;
+@@ -517,10 +524,20 @@ _gpg_encrypt (ctrl_t ctrl,
+ 
+  leave:
+   /* FIXME: Not valid, as npth_t is an opaque type.  */
++#ifdef __MVS__
++  if (reader_thread.__)
++#elif
+   if (reader_thread)
++#endif
+     npth_detach (reader_thread);
++
++#ifdef __MVS__ 
++  if (writer_thread.__)
++#elif
+   if (writer_thread)
++#endif
+     npth_detach (writer_thread);
++
+   if (outbound_fds[0] != -1)
+     close (outbound_fds[0]);
+   if (outbound_fds[1] != -1)
+@@ -602,8 +619,15 @@ _gpg_decrypt (ctrl_t ctrl,
+   assuan_context_t ctx = NULL;
+   int outbound_fds[2] = { -1, -1 };
+   int inbound_fds[2]  = { -1, -1 };
++#ifdef __MVS__
++  npth_t writer_thread;
++  writer_thread.__ = 0;
++  npth_t reader_thread;
++  reader_thread.__ = 0;
++#elif
+   npth_t writer_thread = (npth_t)0;
+   npth_t reader_thread = (npth_t)0;
++#endif
+   gpg_error_t writer_err, reader_err;
+   int ret;
+ 
+@@ -687,10 +711,20 @@ _gpg_decrypt (ctrl_t ctrl,
+     }
+ 
+  leave:
++#ifdef __MVS__
++  if (reader_thread.__)
++#elif
+   if (reader_thread)
++#endif 
+     npth_detach (reader_thread);
++
++#ifdef __MVS__  
++  if (writer_thread.__)
++#elif
+   if (writer_thread)
++#endif
+     npth_detach (writer_thread);
++ 
+   if (outbound_fds[0] != -1)
+     close (outbound_fds[0]);
+   if (outbound_fds[1] != -1)
+diff --git a/configure.ac b/configure.ac
+index 1c1c892ca..fae12cf2d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -847,7 +847,7 @@ AM_PATH_KSBA("$NEED_KSBA_API:$NEED_KSBA_VERSION",have_ksba=yes,have_ksba=no)
+ # FiXME: Use GNUPG_CHECK_LIBUSB and modify to use separate AC_SUBSTs.
+ if test "$use_ccid_driver" = auto || test "$use_ccid_driver" = yes; then
+    case "${host}" in
+-     *-mingw32*)
++     *-mingw32* | *-*-openedition)
+        LIBUSB_NAME=
+        LIBUSB_LIBS=
+        LIBUSB_CPPFLAGS=

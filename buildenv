@@ -4,6 +4,8 @@ GPG_VERSION="2.5.4"
 export ZOPEN_STABLE_URL="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2"
 export ZOPEN_CATEGORIES="security"
 export ZOPEN_STABLE_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses ntbtls zlib zip openssl openssh"
+export ZOPEN_DEV_URL="https://github.com/gpg/gnupg.git"
+export ZOPEN_DEV_DEPS="make bzip2 tar curl perl automake autoconf m4 sed gettext zoslib diffutils libgpgerror npth libgcrypt libksba libassuan texinfo pinentry ncurses ntbtls zlib zip openssl openssh"
 export ZOPEN_BUILD_LINE="STABLE"
 export ZOPEN_COMP=CLANG
 GPG_TTY=$(tty)
@@ -16,6 +18,15 @@ export ZOPEN_EXTRA_LDFLAGS="-L\${ZLIB_HOME}/lib"
 export ZOPEN_EXTRA_LIBS="${ZOPEN_EXTRA_LIBS} -lz"
 export _EDC_SIG_DFLT=1
 export ZOPEN_INSTALL="zopen_install"
+
+zopen_post_buildenv()
+{
+  if [ "${ZOPEN_BUILD_LINE}x" = "DEVx" ]; then
+    export ZOPEN_BOOTSTRAP="./autogen.sh"
+    export ZOPEN_BOOTSTRAP_OPTS=" --force"
+    export ZOPEN_EXTRA_CONFIGURE_OPTS=" -enable-maintainer-mode --with-zlib=\${ZLIB_HOME} --with-npth-prefix=\${NPTH_HOME}"
+  fi
+}
 
 zopen_check_results()
 {
