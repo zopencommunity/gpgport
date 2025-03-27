@@ -1,0 +1,12 @@
+diff --git a/dirmngr/Makefile.am b/dirmngr/Makefile.am
+index a0f8d5a79..ea4e82566 100644
+--- a/dirmngr/Makefile.am
++++ b/dirmngr/Makefile.am
+@@ -207,6 +207,6 @@ t_dns_stuff_CFLAGS = -DWITHOUT_NPTH=1  $(USE_C99_CFLAGS) \
+ 		     $(LIBGCRYPT_CFLAGS) \
+ 	             $(LIBASSUAN_CFLAGS) $(GPG_ERROR_CFLAGS)
+ t_dns_stuff_SOURCES = $(t_common_src) t-dns-stuff.c dns-stuff.c
+-t_dns_stuff_LDADD   = $(t_common_ldadd) $(DNSLIBS)
++t_dns_stuff_LDADD   = $(t_common_ldadd) $(KSBA_LIBS) $(DNSLIBS)
+ 
+ $(PROGRAMS) : $(libcommon) $(libcommonpth)

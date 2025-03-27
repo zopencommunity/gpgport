@@ -24,7 +24,7 @@ zopen_post_buildenv()
   if [ "${ZOPEN_BUILD_LINE}x" = "DEVx" ]; then
     export ZOPEN_BOOTSTRAP="./autogen.sh"
     export ZOPEN_BOOTSTRAP_OPTS=" --force"
-    export ZOPEN_EXTRA_CONFIGURE_OPTS=" -enable-maintainer-mode --with-zlib=\${ZLIB_HOME} --with-npth-prefix=\${NPTH_HOME}"
+    export ZOPEN_EXTRA_CONFIGURE_OPTS=" --enable-maintainer-mode --disable-doc --with-zlib=\${ZLIB_HOME} --with-npth-prefix=\${NPTH_HOME}"
   fi
 }
 
