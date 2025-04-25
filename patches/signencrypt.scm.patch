@@ -1,0 +1,13 @@
+diff --git a/tests/openpgp/signencrypt.scm b/tests/openpgp/signencrypt.scm
+index c00e370..66e906c 100755
+--- a/tests/openpgp/signencrypt.scm
++++ b/tests/openpgp/signencrypt.scm
+@@ -25,7 +25,7 @@
+  (lambda (source)
+    (tr:do
+     (tr:open source)
+-    (tr:gpg usrpass1 `(--yes --passphrase-fd "0" -se --recipient ,usrname2))
++    (tr:gpg usrpass1 `(--yes --passphrase-fd "0" -se --recipient ,usrname2 --trust-model always))
+     (tr:gpg "" '(--yes --decrypt))
+     (tr:assert-identity source)))
+  (append plain-files data-files))

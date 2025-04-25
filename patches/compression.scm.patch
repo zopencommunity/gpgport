@@ -1,0 +1,13 @@
+diff --git a/tests/openpgp/compression.scm b/tests/openpgp/compression.scm
+index d2e46cc..4f541d1 100755
+--- a/tests/openpgp/compression.scm
++++ b/tests/openpgp/compression.scm
+@@ -28,7 +28,7 @@
+     (lambda (source)
+       (tr:do
+        (tr:open source)
+-       (tr:gpg "" `(--yes --encrypt --recipient ,usrname2
++       (tr:gpg "" `(--yes --encrypt --recipient ,usrname2 --trust-model always
+ 			  --compress-algo ,compression))
+        (tr:gpg "" '(--yes --decrypt))
+        (tr:assert-identity source)))

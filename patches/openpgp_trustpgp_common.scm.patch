@@ -1,0 +1,16 @@
+diff --git a/tests/openpgp/trust-pgp/common.scm b/tests/openpgp/trust-pgp/common.scm
+index 2a545e8..5cc3ac7 100644
+--- a/tests/openpgp/trust-pgp/common.scm
++++ b/tests/openpgp/trust-pgp/common.scm
+@@ -23,6 +23,11 @@
+ ;; Redefine GPG without --always-trust.
+ (define GPG `(,(tool 'gpg)))
+ 
++;; Display the value of GPG
++(display "GPG value in common.scm: ")
++(write GPG)
++(newline)
++
+ ;; Helper constants for setownertrust.
+ (define MARGINALTRUST "4")
+ (define FULLTRUST "5")

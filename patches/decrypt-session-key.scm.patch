@@ -1,0 +1,13 @@
+diff --git a/tests/openpgp/decrypt-session-key.scm b/tests/openpgp/decrypt-session-key.scm
+index c3294e0..faa6584 100755
+--- a/tests/openpgp/decrypt-session-key.scm
++++ b/tests/openpgp/decrypt-session-key.scm
+@@ -24,6 +24,8 @@
+   (lettmp (sink)
+     (let* ((status' (call-popen `(,@gpg --status-fd=1 --decrypt
+ 					--show-session-key
++					--pinentry-mode loopback
++       					--passphrase "def"
+ 					--output ,sink ,filename) ""))
+ 	   (status (map (lambda (l)
+ 			  (assert (string-prefix? l "[GNUPG:] "))

@@ -1,0 +1,22 @@
+diff --git a/tests/openpgp/signencrypt-dsa.scm b/tests/openpgp/signencrypt-dsa.scm
+index 1a8f9df..e623a33 100755
+--- a/tests/openpgp/signencrypt-dsa.scm
++++ b/tests/openpgp/signencrypt-dsa.scm
+@@ -27,7 +27,7 @@
+     (tr:open source)
+     (tr:gpg usrpass1 `(--yes --passphrase-fd "0" -se
+ 			     -u ,dsa-usrname1
+-			     --recipient ,dsa-usrname2))
++			     --recipient ,dsa-usrname2 --trust-model always))
+     (tr:gpg "" '(--yes --decrypt))
+     (tr:assert-identity source)))
+  (append plain-files data-files))
+@@ -42,7 +42,7 @@
+     (tr:open (car plain-files))
+     (tr:gpg usrpass1 `(--yes --passphrase-fd "0" -se
+ 			     -u ,dsa-usrname1
+-			     --recipient ,dsa-usrname2
++			     --recipient ,dsa-usrname2 --trust-model always
+ 			     --digest-algo ,hash))
+     (tr:gpg "" '(--yes --decrypt))
+     (tr:assert-identity (car plain-files))))

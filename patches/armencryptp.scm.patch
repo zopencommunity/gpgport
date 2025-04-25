@@ -1,0 +1,13 @@
+diff --git a/tests/openpgp/armencryptp.scm b/tests/openpgp/armencryptp.scm
+index 4bcc058..61b4d8a 100755
+--- a/tests/openpgp/armencryptp.scm
++++ b/tests/openpgp/armencryptp.scm
+@@ -26,7 +26,7 @@
+    (tr:do
+     (tr:open source)
+     (tr:pipe-do
+-     (pipe:gpg `(--yes -ea --recipient ,usrname2))
++     (pipe:gpg `(--yes -ea --recipient ,usrname2 --trust-model always))
+      (pipe:gpg '(--yes --decrypt)))
+     (tr:assert-identity source)))
+  (append plain-files data-files))

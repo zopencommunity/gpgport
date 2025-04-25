@@ -1,0 +1,34 @@
+diff --git a/tests/openpgp/setup.scm b/tests/openpgp/setup.scm
+index b92dc07..322fbd7 100755
+--- a/tests/openpgp/setup.scm
++++ b/tests/openpgp/setup.scm
+@@ -18,10 +18,11 @@
+ ;; along with this program; if not, see <http://www.gnu.org/licenses/>.
+ 
+ (load (in-srcdir "tests" "openpgp" "defs.scm"))
+-
++ (display "dh setup.scm enter\n")
+ (define cache (flag "--create-tarball" *args*))
+ (unless (and cache (= 1 (length cache)))
+ 	(fail "Usage: setup.scm --create-tarball <file> [--use-keyring]"))
++ (display "dh setup.scm -> 1\n")
+ 
+ (when (> (*verbose*) 0)
+       (define (pad symbol length)
+@@ -41,9 +42,16 @@
+        '(gpgconf gpg gpg-agent scdaemon gpgsm keyboxd dirmngr gpg-connect-agent
+ 		 gpg-preset-passphrase gpgtar pinentry)))
+ 
++
++ (display "dh setup.scm -> 2\n")
+ (setenv "GNUPGHOME" (getcwd) #t)
+ (create-gpghome)
++ (display "dh setup.scm -> 3\n")
+ (start-agent)
++ (display "dh setup.scm -> 4\n")
+ (create-legacy-gpghome)
++ (display "dh setup.scm -> 5\n")
+ (stop-agent)
++ (display "dh setup.scm -> 6\n")
+ (call-check `(,(tool 'gpgtar) --create --output ,(car cache) "."))
++ (display "dh setup.scm -> 7\n")

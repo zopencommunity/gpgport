@@ -1,0 +1,13 @@
+diff --git a/tests/openpgp/seat.scm b/tests/openpgp/seat.scm
+index 5cbfbe1..ff0ac44 100755
+--- a/tests/openpgp/seat.scm
++++ b/tests/openpgp/seat.scm
+@@ -25,7 +25,7 @@
+  (lambda (source)
+    (tr:do
+     (tr:open source)
+-    (tr:gpg usrpass1 '(--yes -seat -r two@example.com --passphrase-fd "0"))
++    (tr:gpg usrpass1 '(--yes -seat -r two@example.com --trust-model always --passphrase-fd "0"))
+     (tr:gpg "" '(--yes --decrypt))
+     (tr:assert-weak-identity source)))
+  plain-files)

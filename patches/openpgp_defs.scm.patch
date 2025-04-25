@@ -1,0 +1,527 @@
+diff --git a/tests/openpgp/defs.scm b/tests/openpgp/defs.scm
+index 686439a..63d7bba 100644
+--- a/tests/openpgp/defs.scm
++++ b/tests/openpgp/defs.scm
+@@ -20,7 +20,7 @@
+ ;;
+ ;; Constants.
+ ;;
+-
++(display "define usrname1 \n")
+ (define usrname1 "one@example.com")
+ (define usrpass1 "def")
+ (define usrname2 "two@example.com")
+@@ -34,7 +34,7 @@
+ ;; we have this by now and the notation below will lookup the primary
+ ;; first and then search for the encryption subkey.)
+ (define dsa-usrname2 "0xCB879DE9")
+-
++(display "define usrname done\n")
+ (define keys
+   (package
+    (define (new fpr grip uids subkeys)
+@@ -59,19 +59,23 @@
+ 		    (list
+ 		     (subkey "CD3D0F5701CBFCACB2A4907305A37887B27907AA"
+ 			     "8B5ABF3EF9EB8D96B91A0B8C2C4401C91C834C34"))))))
++(display "define keys done\n")
+ 
+ (define key-file1 "samplekeys/rsa-rsa-sample-1.asc")
+ (define key-file2 "samplekeys/ed25519-cv25519-sample-1.asc")
+ 
++(display "define key files  done\n")
+ (define plain-files '("plain-1" "plain-2" "plain-3" "plain-large"))
+ (define data-files '("data-500" "data-9000" "data-32000" "data-80000"))
+ (define exp-files '())
++(display "define exp files  done\n")
+ (define all-files (append plain-files data-files))
+ 
+ (let ((verbose (string->number (getenv "verbose"))))
+   (if (number? verbose)
+       (*set-verbose!* verbose)))
+ 
++(display "define allfiles  done\n")
+ (define (qualify executable)
+   (string-append executable (getenv "EXEEXT")))
+ 
+@@ -80,7 +84,7 @@
+     (if (string=? "" value)
+ 	default
+ 	value)))
+-
++(display "define allfiles  done\n")
+ (define (percent-decode s)
+   (define (decode c)
+     (if (and (> (length c) 2) (char=? #\% (car c)))
+@@ -92,6 +96,7 @@
+ 	(let ((decoded (decode c)))
+ 	  (string-set! r i (if decoded decoded (car c)))
+ 	  (loop (+ 1 i) (if decoded (cdddr c) (cdr c)) r)))))
++(display "define percent-decode done\n")
+ (assert (equal? (percent-decode "") ""))
+ (assert (equal? (percent-decode "%61") "a"))
+ (assert (equal? (percent-decode "foob%61r") "foobar"))
+@@ -116,20 +121,50 @@
+ ;; in each list is an envvar which can be used to specify a different
+ ;; tool than the installed one.
+ (define tools
+-  '((gpgv "GPGV" "g10/gpgv")
+-    (gpg-connect-agent "GPG_CONNECT_AGENT" "tools/gpg-connect-agent")
+-    (gpgconf "GPGCONF" "tools/gpgconf")
++  '((gpgv "GPGV" "bin/gpgv")
++    (gpg-connect-agent "GPG_CONNECT_AGENT" "bin/gpg-connect-agent")
++    (gpgconf "GPGCONF" "bin/gpgconf")
+     (gpg-preset-passphrase "GPG_PRESET_PASSPHRASE"
+ 			   "agent/gpg-preset-passphrase")
+-    (gpgtar "GPGTAR" "tools/gpgtar")
++    (gpgtar "GPGTAR" "bin/gpgtar")
+     (pinentry "PINENTRY" "tests/openpgp/fake-pinentry")))
+ 
++;; Function to debug the `tools` list
++(define (debug-tools)
++  (display "Tools list:\n")
++  (for-each
++   (lambda (entry)
++     (display "Tool: ") (display (car entry)) (newline)
++     (display "  Env Var: ") (display (cadr entry)) (newline)
++     (display "  Path: ") (display (caddr entry)) (newline))
++   tools))
++
++;; Call this function at the start of execution
++(debug-tools)
++(display "define tools done\n")
++
+ (define (tool-hardcoded which)
++  (display "Entering tool-hardcoded with: ") (display which) (newline)
+   (let ((t (assoc which tools)))
+-    (getenv' (cadr t)
+-	     (qualify (string-append (getenv "GNUPG_BUILD_ROOT")
+-                                     "/" (caddr t))))))
+-
++    (display "Lookup result from tools: ") (display t) (newline)
++
++    (if (not t)
++        (begin
++          (display "Error: Tool not found in tools list!\n")
++          (error "Tool not found in tools list")))
++
++    (let ((env-var (cadr t))
++          (relative-path (caddr t)))
++      (display "Environment variable: ") (display env-var) (newline)
++      (display "Relative path: ") (display relative-path) (newline)
++
++      (let ((resolved-path (getenv' env-var
++                                    (qualify (string-append
++                                              (getenv "GNUPG_BUILD_ROOT")
++                                              "/" relative-path)))))
++        (display "Resolved path: ") (display resolved-path) (newline)
++        resolved-path))))
++(display "define tools-hardcoded done\n")
+ (define with-valgrind? (not (string=? (getenv "with_valgrind") "")))
+ 
+ ;; You can splice VALGRIND into your argument vector to run programs
+@@ -142,16 +177,58 @@
+   '("/usr/bin/valgrind" -q --leak-check=no --track-origins=yes
+                         --error-exitcode=154 --exit-on-first-error=yes))
+ 
++(display "define valgrind done\n")
++(define (remove-tools-path line)
++  (let ((pos (string-search "tools/" line)))
++    (if pos
++        (string-append (substring line 0 pos)
++                       (substring line (+ pos 6)))  ;; Skip "tools/"
++        line)))  ;; If "tools/" not found, return line unchanged
++(define (string-search needle haystack)
++  (let ((needle-len (string-length needle))
++        (haystack-len (string-length haystack)))
++    (let loop ((i 0))
++      (cond
++        ((> (+ i needle-len) haystack-len) #f)  ;; Stop if beyond the haystack
++        ((string=? (substring haystack i (+ i needle-len)) needle) i)  ;; Found match
++        (else (loop (+ i 1)))))))  ;; Keep searching
++
+ (define (gpg-conf . args)
+   (gpg-conf' "" args))
+ (define (gpg-conf' input args)
+-  (let ((s (call-popen `(,(tool-hardcoded 'gpgconf)
+-			 ,@(if *win32*
+-			       (list '--build-prefix (getenv "objdir"))
+-			       '())
+-			 ,@args) input)))
+-    (map (lambda (line) (map percent-decode (string-split line #\:)))
+-	 (string-split-newlines s))))
++  (display "Entering gpg-conf' with input:\n") (display input) (newline)
++  (display "Arguments passed: ") (display args) (newline)
++
++  ;; Debugging tool-hardcoded
++  (let ((hardcoded-tool (tool-hardcoded 'gpgconf)))
++    (display "tool-hardcoded result: ") (display hardcoded-tool) (newline)
++
++      ;; Execute gpgconf and debug output
++      ;; Execute gpgconf and debug output
++(let ((s (begin
++           (display "Executing gpgconf with arguments: ") 
++           (display `(,hardcoded-tool ,@(if *win32*
++                                            (list '--build-prefix (getenv "objdir"))
++                                            '())
++                                      ,@args)) (newline)
++           (display "Input to call-popen: ") (display input) (newline)
++           (call-popen `(,hardcoded-tool
++                         ,@(if *win32*
++                               (list '--build-prefix (getenv "objdir"))
++                               '())
++                         ,@args) input))))
++  (display "Raw output from gpgconf:\n") 
++  (display s) 
++  (newline)
++      ;; Process output
++      (map (lambda (line)
++       (display "Processing line (before modification): ") (display line) (newline)
++       (let ((modified-line (remove-tools-path line)))
++         (display "Processing line (after modification): ") (display modified-line) (newline)
++         (map percent-decode (string-split modified-line #\:))))
++     (string-split-newlines s))
++      )))
++(display "define gpgconf args done\n")
+ (define :gc:c:name car)
+ (define :gc:c:description cadr)
+ (define :gc:c:pgmname caddr)
+@@ -166,6 +243,7 @@
+ (define (:gc:o:default-argument x) (list-ref x 8))
+ (define (:gc:o:value x)            (if (< (length x) 10) "" (list-ref x 9)))
+ 
++(display "define gc args done\n")
+ (define (gpg-config component key)
+   (package
+    (define (value)
+@@ -185,31 +263,50 @@
+    (define (clear)
+      (gpg-conf' (string-append key ":16:")
+ 		`(--change-options ,component)))))
++(display "define gc conf components done\n")
+ 
+ (define gpg-components (apply gpg-conf '(--list-components)))
++(display "gpg-conf output: ")  
++(display (apply gpg-conf '(--list-components)))  
++(newline)
+ 
+ (define (tool which)
+-  (case which
+-    ((gpg gpg-agent scdaemon gpgsm keyboxd dirmngr)
+-     (:gc:c:pgmname (assoc (symbol->string which) gpg-components)))
+-    (else
+-     (tool-hardcoded which))))
++  (display "Looking for tool: ") (display which) (newline)
++  (let ((entry (assoc (symbol->string which) gpg-components)))
++    (display "Assoc result: ") (display entry) (newline)
++    (case which
++      ((gpg gpg-agent scdaemon gpgsm keyboxd dirmngr)
++       (if entry
++           (begin
++             (display "Using path from gpg-components: ") (display (cdr entry)) (newline)
++             (:gc:c:pgmname entry))
++           (begin
++             (display "Tool not found in gpg-components, falling back to tool-hardcoded") (newline)
++             (tool-hardcoded which))))
++      (else
++       (begin
++         (display "Tool not in known cases, using tool-hardcoded") (newline)
++         (tool-hardcoded which))))))
++(display "define tool which  done\n")
+ 
+ (define (gpg-has-option? option)
+   (string-contains? (call-popen `(,(tool 'gpg) --dump-options) "")
+ 		    option))
+ 
++(display "define gpg-has-option done\n")
+ (define have-opt-always-trust
+   (catch #f
+ 	 (with-ephemeral-home-directory (lambda ()) (lambda ())
+ 	   (call-check `(,(tool 'gpg) --gpgconf-test --always-trust)))
+ 	 #t))
+ 
++(display "define have-opt-always-trust done\n")
+ (define GPG `(,(tool 'gpg) --no-permission-warning
+ 	      ,@(if have-opt-always-trust '(--always-trust) '())))
+ (define GPGV `(,(tool 'gpgv)))
+ (define PINENTRY (tool 'pinentry))
+ 
++(display "define gpg, gpgv, pinentry done\n")
+ (define (tr:gpg input args)
+   (tr:spawn input `(,@GPG --output **out** ,@args **in**)))
+ 
+@@ -280,7 +377,7 @@
+ (setenv "GPG_AGENT_INFO" "" #t)
+ (setenv "GNUPGHOME" (getcwd) #t)
+ (define GNUPGHOME (getcwd))
+-
++(display "GNUPGHOME done\n")
+ ;;
+ ;; GnuPG helper.
+ ;;
+@@ -375,6 +472,7 @@
+ 	       (string-append "pinentry-program " (tool 'pinentry))
+ 	       "disable-scdaemon"))
+ 
++(display "create-gpg home done\n")
+ ;; Initialize the test environment, install appropriate configuration
+ ;; and start the agent, without any keys.
+ (define (setup-environment)
+@@ -398,6 +496,18 @@
+    (lambda (name)
+      (dearmor (in-srcdir "tests" "openpgp" (string-append name "o.asc")) name))
+    plain-files))
++;; Define GPG command path explicitly (adjust if necessary)
++(define GPG `("/home/haritha/code/gpgport/gnupg-2.5.4/bin/gpg"))
++
++;; Debug function to print and execute commands
++(define (debug-spawn cmd)
++  (display "Spawning command: ") (display cmd) (newline)
++  (pipe:spawn cmd))
++
++(define dearmor-proc
++  (pipe:spawn `(,@GPG --dearmor)))
++(display "Dearmor Process Return: ") (display dearmor-proc) (newline)
++
+ 
+ (define (create-legacy-gpghome)
+   (create-sample-files)
+@@ -406,7 +516,7 @@
+   (for-each
+    (lambda (name)
+      (dearmor (in-srcdir "tests" "openpgp" "privkeys" (string-append name ".asc"))
+-	      (string-append "private-keys-v1.d/" name ".key")))
++              (string-append "private-keys-v1.d/" name ".key")))
+    '("50B2D4FA4122C212611048BC5FC31BD44393626E"
+      "7E201E28B6FEB2927B321F443205F4724EBE637E"
+      "13FDB8809B17C5547779F9D205C45F47CE0217CE"
+@@ -429,7 +539,7 @@
+    (lambda (name)
+      (file-copy (in-srcdir "tests" "openpgp" "privkeys"
+                            (string-append name ".key"))
+-	        (string-append "private-keys-v1.d/" name ".key")))
++                (string-append "private-keys-v1.d/" name ".key")))
+    '("891067FFFC6D67D37BD4BFC399191C5F3989D1B5"
+      "F27FC04CB01723A4CB6F5399F7B86CCD82C0169C"))
+ 
+@@ -439,13 +549,15 @@
+      (call-check `(,@GPG --yes --import ,(in-srcdir "tests" "openpgp" file))))
+    (list "pubdemo.asc" "pubring.asc" key-file1))
+ 
+-  (pipe:do
++   (pipe:do
+    (pipe:open (in-srcdir "tests" "openpgp" "pubring.pkr.asc") (logior O_RDONLY O_BINARY))
+    (pipe:spawn `(,@GPG --dearmor))
+    (pipe:spawn `(,@GPG --yes --import))))
+ 
++
+ (define (preset-passphrases)
+   (log "Presetting passphrases")
++  (display "dh Presetting passphrases \n")
+   ;; one@example.com
+   (call-check `(,(tool 'gpg-preset-passphrase)
+ 		--preset --passphrase def
+@@ -461,6 +573,7 @@
+ 		--preset --passphrase abc
+ 		"A0747D5F9425E6664F4FFBEED20FBCA79FDED2BD")))
+ 
++(display "preset-passphrases done\n")
+ ;; Initialize the test environment, install appropriate configuration
+ ;; and start the agent, with the keys from the legacy test suite.
+ (define (setup-legacy-environment)
+@@ -474,26 +587,168 @@
+ 	(create-legacy-gpghome)))
+   (preset-passphrases))
+ 
++(define (call-with-output-string thunk)
++  (let* ((temp-file "/tmp/gpgconf-output.txt")  ;; Temporary file for output capture
++         (out-port (open-output-file temp-file)))
++    (thunk out-port)  ;; Execute function with output redirected
++    (close-port out-port)
++    (let* ((in-port (open-input-file temp-file))
++           (result (read-string #f in-port)))  ;; Read entire output
++      (close-port in-port)
++      (delete-file temp-file)  ;; Clean up
++      result)))  ;; Return captured output
++
+ ;; Create the socket dir and start the agent.
+ (define (start-agent . args)
+-  (log "Starting gpg-agent...")
++  (display"Starting gpg-agent...")
+   (let ((gnupghome (getenv "GNUPGHOME")))
++    (display "GNUPGHOME: ") (display gnupghome) (newline)  ;; Print GNUPGHOME
+     (if (null? args)
+-	(atexit (lambda ()
+-		  (with-home-directory gnupghome (stop-agent))))))
+-  (catch (log "Warning: Creating socket directory failed:" (car *error*))
+-	 (gpg-conf '--create-socketdir))
++        (atexit (lambda ()
++                  (with-home-directory gnupghome (stop-agent))))))
++
++  ;; Run gpgconf --create-socketdir and capture output
++  (let ((socketdir-result (process-spawn-io (list (tool 'gpgconf) "--create-socketdir") "")))
++   (display "gpgconf --create-socketdir result: ") (display socketdir-result) (newline))
++
+   (call-check `(,(tool 'gpg-connect-agent) --verbose
+-		,(string-append "--agent-program=" (tool 'gpg-agent)
+-				"|--debug-quick-random")
+-		/bye)))
++                ,(string-append "--agent-program=" (tool 'gpg-agent)
++                                "|--debug-quick-random")
++                /bye)))
+ 
+ ;; Stop the agent and other daemons and remove the socket dir.
++(define (string-join lst sep)
++  (cond
++    ((null? lst) "")
++    ((null? (cdr lst)) (car lst))  ;; If only one element, return it directly
++    (else (string-append (car lst) sep (string-join (cdr lst) sep)))))
++
++;; Example usage
++;(display (string-join '("Hello" "World" "Scheme") ", "))
++;(newline)
++
++
++;(define (get-process-list)
++ ; (let ((result (process-spawn-io (list "/bin/ps" "-ef") "")))
++  ;  (display "Process List Output:\n")
++   ; (display result)
++    ;(newline)
++    ;(if (string? result) result "Error retrieving process list.")))
++
++(define (join-lines lst)
++  (if (null? lst)
++      ""
++      (string-append (if (string? (car lst)) (car lst) (number->string (car lst)))
++                     "\n"
++                     (join-lines (cdr lst)))))
++
++(define (get-process-list)
++  (let ((result (process-spawn-io (list "/bin/ps" "-ef") "")))
++    (display "Process List Output:\n")
++    (write result)  ;; Print raw value for debugging
++    (newline)
++
++    ;; Convert result to a string if it's a list
++    (cond
++      ((string? result) result)  ;; Already a string, return as-is
++      ((list? result)            ;; If it's a list, convert all elements to strings
++       (let ((result-string (join-lines result)))
++         (display "Converted list to string:\n")
++         (write result-string)
++         (newline)
++         result-string))
++      (else
++       (display "Error: process-spawn-io returned an unknown type.\n")
++       "Error retrieving process list."))))
++
++;; Call the function
++(get-process-list)
++
++
++
++
++(define (get-gpg-agent-pids)
++  (let ((processes (get-process-list)))
++    ;; Debugging: Print raw value of `processes`
++    (display "Raw value of 'processes': ")
++    (write processes)  ;; This will show its real type
++    (newline)
++
++    (if (string? processes)
++        (let ((lines (string-split processes #\newline)))
++          (display "Number of lines in process list: ")
++          (display (length lines))
++          (newline)
++          (display "All process lines:\n")
++          (for-each (lambda (line) (display line) (newline)) lines)
++          lines)
++        (begin
++          (display "Error: processes is not a string.\n")
++          '()))))
++
++
++(define (extract-pids process-list)
++  (map (lambda (line)
++         (let* ((tokens (filter (lambda (s) (not (string=? s "")))  ;; Remove empty tokens
++                                (string-split line #\space)))  ;; Split by space
++                (pid (if (and (> (length tokens) 1) (string->number (cadr tokens)))
++                         (cadr tokens)
++                         #f)))  ;; Extract PID only if it's a number
++           pid))
++       (filter (lambda (line) (string-contains? line "gpg-agent"))
++               (string-split process-list #\newline))))
++
+ (define (stop-agent)
+-  (log "Stopping gpg-agent...")
+-  (gpg-conf '--kill 'all)
+-  (catch (log "Warning: Removing socket directory failed.")
+-	 (gpg-conf '--remove-socketdir)))
++  (display "Stopping gpg-agent...\n")
++
++  ;; Capture running processes before stopping
++  (let ((before-kill (get-process-list)))
++    (display "Before kill:\n")
++    (display before-kill)
++    (newline)
++
++    (let ((pids (filter string? (extract-pids before-kill))))  ;; Extract PIDs
++      (display "PIDs to kill:\n")
++      (for-each (lambda (pid) (display pid) (newline)) pids)
++
++      (if (null? pids)
++          (display "No gpg-agent processes found.\n")
++          (begin
++            (display "Manually killing gpg-agent processes...\n")
++	    (for-each (lambda (pid)
++            (display (string-append "Killing PID: " pid "\n"))
++
++            ;; Execute kill and capture output
++            (let ((kill-result (process-spawn-io (list "/bin/kill" "-9" pid) "")))
++              (display (string-append "Kill result for PID " pid ": "))
++              (write kill-result)  ;; Print raw result of kill
++              (newline))
++
++            ;; Check if process is still running
++            (let ((still-running (filter (lambda (line) (string-contains? line pid))
++                                         (string-split (get-process-list) #\newline))))
++              (if (null? still-running)
++                  (display (string-append "Successfully killed PID: " pid "\n"))
++                  (display (string-append "Failed to kill PID: " pid "\n")))))
++          pids)
++	    ))))
++
++  ;; Verify if any gpg-agent processes remain
++  (let ((after-kill (get-process-list)))
++    (display "After kill:\n")
++    (let ((remaining (filter (lambda (line) (string-contains? line "gpg-agent"))
++                             (string-split after-kill #\newline))))
++      (if (null? remaining)
++          (display "gpg-agent successfully stopped.\n")
++          (begin
++            (display "gpg-agent is still running:\n")
++            (display (string-join remaining "\n"))
++            (newline)))))
++
++  ;; Remove socket directory
++  (let ((remove-result (process-spawn-io (list (tool 'gpgconf) "--remove-socketdir") "")))
++    (display "gpgconf --remove-socketdir result: ") (display remove-result) (newline)))
++
+ 
+ ;; Get the trust level for KEYID.  Any remaining arguments are simply
+ ;; passed to GPG.
+@@ -520,12 +775,14 @@
+ 		   "but got" trust))))
+ 
+ 
++(display "checktrust done\n")
+ ;;
+ ;; Enable checking with valgrind if the envvar "with_valgrind" is set
+ ;;
+ (when with-valgrind?
+   (set! gpg `(,@valgrind ,@gpg)))
+ 
++(display "defs.scm done\n")
+ 
+ ;;(set! *args* (append *args* (list "--use-keyboxd")))
+ 

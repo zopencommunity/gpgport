@@ -1,0 +1,13 @@
+diff --git a/tests/openpgp/armencrypt.scm b/tests/openpgp/armencrypt.scm
+index 6d6ec4d..5a9c121 100755
+--- a/tests/openpgp/armencrypt.scm
++++ b/tests/openpgp/armencrypt.scm
+@@ -25,7 +25,7 @@
+  (lambda (source)
+    (tr:do
+     (tr:open source)
+-    (tr:gpg usrpass1 `(--yes --passphrase-fd "0" -ea --recipient ,usrname2))
++    (tr:gpg usrpass1 `(--yes --passphrase-fd "0" -ea --recipient ,usrname2 --trust-model always))
+     (tr:gpg "" '(--yes --decrypt))
+     (tr:assert-identity source)))
+  (append plain-files data-files))
