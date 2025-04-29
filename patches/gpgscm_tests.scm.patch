@@ -1,0 +1,74 @@
+diff --git a/tests/gpgscm/tests.scm b/tests/gpgscm/tests.scm
+index 1e6d7fe..9317f03 100644
+--- a/tests/gpgscm/tests.scm
++++ b/tests/gpgscm/tests.scm
+@@ -114,11 +114,65 @@
+ 	(throw (string-append (stringify what) " failed")
+ 	       (:stderr result)))))
+ 
++;(define (call-popen command input-string)
++ ; (let ((result (call-with-io command input-string)))
++  ;  (if (= 0 (:retcode result))
++;	(:stdout result)
++;	(throw (:stderr result)))))
++
++(define (string-trimm s)
++  (if (string? s)
++      (regexp-replace "^[ \t\n\r]+|[ \t\n\r]+$" s "")
++      (error "string-trimm: argument must be a string" s)))
++
++(define (trim-newlines str)
++  (string-trimm str " \t\n\r"))
++
+ (define (call-popen command input-string)
+-  (let ((result (call-with-io command input-string)))
+-    (if (= 0 (:retcode result))
+-	(:stdout result)
+-	(throw (:stderr result)))))
++  (let* ((gpg-check (call-with-io '("which" "gpg") ""))
++         (gpg-stdout (if (and (list? gpg-check) (not (null? gpg-check)))
++                         (:stdout gpg-check)
++                         "")))
++
++    (let ((gpg-path (if (and (string? gpg-stdout) (not (string=? gpg-stdout "")))
++                         (trim-newlines gpg-stdout)
++                         (in-srcdir  "bin/gpg"))))  ;; Default GPG path
++
++      ;; Debugging output AFTER trimming
++      (display "Resolved gpg-path: \"")
++      (display gpg-path)
++      (display "\"\n")
++
++      ;; If fallback is used, check if it exists
++      (if (not (file-exists? gpg-path))
++          (begin
++            (display "Error: Default GPG path does not exist.\n")
++            (throw "Invalid GPG path. Ensure GPG is installed.")))
++
++      ;; Debugging: Print the command and input string
++      (display "Executing command: ")
++      (display command)
++      (newline)
++
++      (display "Input string for command:\n")
++      (display input-string)
++      (newline)
++
++      ;; Execute the actual command
++      (let ((result (call-with-io command input-string)))
++        ;; Debugging: Print the result structure
++        (display "Raw GPG Call Result:\n")
++        (display result)
++        (newline)
++
++        (if (= 0 (:retcode result))
++            (:stdout result)
++            (begin
++              (display "GPG Error Output:\n")
++              (display (or (:stderr result) "(no error message)"))
++              (newline)
++              (throw (:stderr result))))))))
++
+ 
+ ;;
+ ;; File management.

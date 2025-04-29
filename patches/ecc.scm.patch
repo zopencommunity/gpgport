@@ -1,0 +1,13 @@
+diff --git a/tests/openpgp/ecc.scm b/tests/openpgp/ecc.scm
+index a63ec45..53c438e 100755
+--- a/tests/openpgp/ecc.scm
++++ b/tests/openpgp/ecc.scm
+@@ -198,7 +198,7 @@ Rg==
+     (lambda (keyid)
+       (tr:do
+        (tr:open source)
+-       (tr:gpg "" `(--yes --encrypt --recipient ,keyid))
++       (tr:gpg "" `(--yes --encrypt --recipient ,keyid --trust-model always))
+        (tr:gpg "" '(--yes --decrypt))
+        (tr:assert-identity source)))
+     mainkeyids))

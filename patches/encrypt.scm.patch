@@ -1,0 +1,67 @@
+diff --git a/tests/openpgp/encrypt.scm b/tests/openpgp/encrypt.scm
+index ef2f7b0..26f9d88 100755
+--- a/tests/openpgp/encrypt.scm
++++ b/tests/openpgp/encrypt.scm
+@@ -25,7 +25,7 @@
+  (lambda (source)
+    (tr:do
+     (tr:open source)
+-    (tr:gpg "" `(--yes --encrypt --recipient ,usrname2))
++    (tr:gpg "" `(--yes --encrypt --recipient ,usrname2 --trust-model always))
+     (tr:gpg "" '(--yes --decrypt))
+     (tr:assert-identity source)))
+  (append plain-files data-files))
+@@ -38,7 +38,7 @@
+     (lambda (source)
+       (tr:do
+        (tr:open source)
+-       (tr:gpg "" `(--yes --encrypt --recipient ,usrname2
++       (tr:gpg "" `(--yes --encrypt --recipient ,usrname2 --trust-model always
+ 			  --cipher-algo ,cipher))
+        (tr:gpg "" '(--yes --decrypt))
+        (tr:assert-identity source)))
+@@ -55,7 +55,7 @@
+     (tr:open source)
+     (tr:gpg "" `(--yes -v --no-keyring --encrypt
+                  --recipient-file ,(in-srcdir "tests" "openpgp" key-file1)
+-                 --hidden-recipient-file ,(in-srcdir "tests" "openpgp" key-file2)))
++                 --hidden-recipient-file ,(in-srcdir "tests" "openpgp" key-file2) --trust-model always ))
+     (tr:gpg "" '(--yes --decrypt))
+     (tr:assert-identity source)))
+  plain-files)
+@@ -75,7 +75,7 @@
+  (lambda (source)
+    (tr:do
+     (tr:open source)
+-    (tr:gpg "" `(--yes -er ,"patrice.lumumba"))
++    (tr:gpg "" `(--yes -er ,"patrice.lumumba" --trust-model always))
+     (tr:gpg "" '(--yes -d))
+     (tr:assert-identity source)))
+  all-files)
+@@ -90,7 +90,7 @@
+     (tr:open source)
+     (tr:gpgstatus "" `(--yes -e
+                        -r ,"patrice.lumumba"
+-                       -r ,"mahsa.amini"))
++                       -r ,"mahsa.amini" --trust-model always))
+     (tr:call-with-content
+      (lambda (c)
+        (unless (string-contains? c "[GNUPG:] BEGIN_ENCRYPTION 0 9 2")
+@@ -105,7 +105,7 @@
+     (tr:gpgstatus "" `(--yes -o out -e
+                              -r ,"patrice.lumumba"
+                              -r ,"mahsa.amini"
+-                             -r ,"steve.biko"))
++                             -r ,"steve.biko" --trust-model always))
+     (tr:call-with-content
+      (lambda (c)
+        (unless (string-contains? c "[GNUPG:] BEGIN_ENCRYPTION 2 9")
+@@ -118,7 +118,7 @@
+    (tr:do
+     (tr:open source)
+     (tr:gpgstatus "" `(--yes -e --force-ocb
+-                       -r ,"steve.biko"))
++                       -r ,"steve.biko" --trust-model always))
+     (tr:call-with-content
+      (lambda (c)
+        (unless (string-contains? c "[GNUPG:] BEGIN_ENCRYPTION 0 9 2")

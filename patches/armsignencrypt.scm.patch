@@ -1,0 +1,13 @@
+diff --git a/tests/openpgp/armsignencrypt.scm b/tests/openpgp/armsignencrypt.scm
+index 97595f0..6120482 100755
+--- a/tests/openpgp/armsignencrypt.scm
++++ b/tests/openpgp/armsignencrypt.scm
+@@ -25,7 +25,7 @@
+  (lambda (source)
+    (tr:do
+     (tr:open source)
+-    (tr:gpg usrpass1 `(--yes --passphrase-fd "0" -sea --recipient ,usrname2))
++    (tr:gpg usrpass1 `(--yes --passphrase-fd "0" -sea --recipient ,usrname2 --trust-model always))
+     (tr:gpg "" '(--yes --decrypt))
+     (tr:assert-identity source)))
+  (append plain-files data-files))
