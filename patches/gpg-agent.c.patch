@@ -1,5 +1,5 @@
 diff --git a/agent/gpg-agent.c b/agent/gpg-agent.c
-index 5b1a124..15a07cc 100644
+index ae12959..b3164a2 100644
 --- a/agent/gpg-agent.c
 +++ b/agent/gpg-agent.c
 @@ -1900,12 +1900,13 @@ agent_libgcrypt_progress_cb (void *data, const char *what, int printchar,
@@ -66,31 +66,31 @@ index 5b1a124..15a07cc 100644
 @@ -2878,7 +2881,7 @@ start_connection_thread_std (void *arg)
    if (check_nonce (ctrl, &socket_nonce))
      {
-       log_error ("handler 0x%lx for fd %d FAILED nonce check\n",
--                 (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
-+                 (unsigned long) npth_self().__, FD_DBG (ctrl->thread_startup.fd));
-       assuan_sock_close (ctrl->thread_startup.fd);
+       log_error ("handler 0x%lx nonce check FAILED\n",
+-                 (unsigned long) npth_self());
++                 (unsigned long) npth_self().__);
        return NULL;
      }
-@@ -2896,7 +2899,7 @@ start_connection_thread_extra (void *arg)
+ 
+@@ -2895,7 +2898,7 @@ start_connection_thread_extra (void *arg)
    if (check_nonce (ctrl, &socket_nonce_extra))
      {
-       log_error ("handler 0x%lx for fd %d FAILED nonce check\n",
--                 (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
-+                 (unsigned long) npth_self().__, FD_DBG (ctrl->thread_startup.fd));
-       assuan_sock_close (ctrl->thread_startup.fd);
+       log_error ("handler 0x%lx nonce check FAILED\n",
+-                 (unsigned long) npth_self());
++                 (unsigned long) npth_self().__);
        return NULL;
      }
-@@ -2915,7 +2918,7 @@ start_connection_thread_browser (void *arg)
+ 
+@@ -2913,7 +2916,7 @@ start_connection_thread_browser (void *arg)
    if (check_nonce (ctrl, &socket_nonce_browser))
      {
-       log_error ("handler 0x%lx for fd %d FAILED nonce check\n",
--                 (unsigned long) npth_self(), FD_DBG (ctrl->thread_startup.fd));
-+                 (unsigned long) npth_self().__, FD_DBG (ctrl->thread_startup.fd));
-       assuan_sock_close (ctrl->thread_startup.fd);
+       log_error ("handler 0x%lx nonce check FAILED\n",
+-                 (unsigned long) npth_self());
++                 (unsigned long) npth_self().__);
        return NULL;
      }
-@@ -2941,12 +2944,12 @@ start_connection_thread_ssh (void *arg)
+ 
+@@ -2935,12 +2938,12 @@ start_connection_thread_ssh (void *arg)
    agent_init_default_ctrl (ctrl);
    if (opt.verbose)
      log_info (_("ssh handler 0x%lx for fd %d started\n"),
