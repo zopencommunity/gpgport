@@ -1,15 +1,25 @@
 diff --git a/g10/decrypt.c b/g10/decrypt.c
-index cb9e36a..9314d23 100644
+index fb606cb..226388b 100644
 --- a/g10/decrypt.c
 +++ b/g10/decrypt.c
-@@ -53,7 +53,9 @@ decrypt_message (ctrl_t ctrl, const char *filename)
+@@ -62,11 +62,16 @@ decrypt_message (ctrl_t ctrl, const char *filename, strlist_t remusr)
  
    /* Open the message file.  */
    fp = iobuf_open (filename);
 -  if (fp && is_secured_file (iobuf_get_fd (fp)))
-+  int fd =iobuf_get_fd (fp);
-+  __disableautocvt(fd);
-+  if (fp && is_secured_file (fd))
++  if (fp)
      {
-       iobuf_close (fp);
-       fp = NULL;
+-      iobuf_close (fp);
+-      fp = NULL;
+-      gpg_err_set_errno (EPERM);
++      int fd = iobuf_get_fd (fp);
++      __disableautocvt(fd);
++      if (is_secured_file (fd))
++        {
++          iobuf_close (fp);
++          fp = NULL;
++          gpg_err_set_errno (EPERM);
++        }
+     }
+   if ( !fp )
+     {

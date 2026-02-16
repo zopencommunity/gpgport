@@ -1,0 +1,14 @@
+diff --git a/common/stringhelp.c b/common/stringhelp.c
+index 8bbc68a..5dee32f 100644
+--- a/common/stringhelp.c
++++ b/common/stringhelp.c
+@@ -50,6 +50,9 @@
+ # include <windows.h>
+ #endif
+ #include <limits.h>
++#ifdef __MVS__
++#include <string.h>
++#endif
+ 
+ #include "util.h"
+ #include "common-defs.h"
