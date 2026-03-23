@@ -1,8 +1,8 @@
 diff --git a/agent/gpg-agent.c b/agent/gpg-agent.c
-index ae12959..b3164a2 100644
+index 85bca9b..4e679ee 100644
 --- a/agent/gpg-agent.c
 +++ b/agent/gpg-agent.c
-@@ -1900,12 +1900,13 @@ agent_libgcrypt_progress_cb (void *data, const char *what, int printchar,
+@@ -1903,12 +1903,13 @@ agent_libgcrypt_progress_cb (void *data, const char *what, int printchar,
                               int current, int total)
  {
    struct progress_dispatch_s *dispatch;
@@ -18,7 +18,7 @@ index ae12959..b3164a2 100644
        break;
    if (dispatch && dispatch->cb)
      dispatch->cb (dispatch->ctrl, what, printchar, current, total);
-@@ -1918,10 +1919,11 @@ static void
+@@ -1921,10 +1922,11 @@ static void
  unregister_progress_cb (void)
  {
    struct progress_dispatch_s *dispatch;
@@ -32,7 +32,7 @@ index ae12959..b3164a2 100644
        break;
    if (dispatch)
      {
-@@ -1939,12 +1941,13 @@ agent_set_progress_cb (void (*cb)(ctrl_t ctrl, const char *what,
+@@ -1942,12 +1944,13 @@ agent_set_progress_cb (void (*cb)(ctrl_t ctrl, const char *what,
                         ctrl_t ctrl)
  {
    struct progress_dispatch_s *dispatch, *firstfree;
@@ -48,7 +48,7 @@ index ae12959..b3164a2 100644
          break;
        if (!dispatch->ctrl && !firstfree)
          firstfree = dispatch;
-@@ -2855,12 +2858,12 @@ do_start_connection_thread (ctrl_t ctrl)
+@@ -2857,12 +2860,12 @@ do_start_connection_thread (ctrl_t ctrl)
    agent_init_default_ctrl (ctrl);
    if (opt.verbose > 1 && !DBG_IPC)
      log_info (_("handler 0x%lx for fd %d started\n"),
@@ -63,7 +63,7 @@ index ae12959..b3164a2 100644
  
    agent_deinit_default_ctrl (ctrl);
    xfree (ctrl);
-@@ -2878,7 +2881,7 @@ start_connection_thread_std (void *arg)
+@@ -2880,7 +2883,7 @@ start_connection_thread_std (void *arg)
    if (check_nonce (ctrl, &socket_nonce))
      {
        log_error ("handler 0x%lx nonce check FAILED\n",
@@ -72,7 +72,7 @@ index ae12959..b3164a2 100644
        return NULL;
      }
  
-@@ -2895,7 +2898,7 @@ start_connection_thread_extra (void *arg)
+@@ -2897,7 +2900,7 @@ start_connection_thread_extra (void *arg)
    if (check_nonce (ctrl, &socket_nonce_extra))
      {
        log_error ("handler 0x%lx nonce check FAILED\n",
@@ -81,7 +81,7 @@ index ae12959..b3164a2 100644
        return NULL;
      }
  
-@@ -2913,7 +2916,7 @@ start_connection_thread_browser (void *arg)
+@@ -2915,7 +2918,7 @@ start_connection_thread_browser (void *arg)
    if (check_nonce (ctrl, &socket_nonce_browser))
      {
        log_error ("handler 0x%lx nonce check FAILED\n",
@@ -90,7 +90,7 @@ index ae12959..b3164a2 100644
        return NULL;
      }
  
-@@ -2935,12 +2938,12 @@ start_connection_thread_ssh (void *arg)
+@@ -2937,12 +2940,12 @@ start_connection_thread_ssh (void *arg)
    agent_init_default_ctrl (ctrl);
    if (opt.verbose)
      log_info (_("ssh handler 0x%lx for fd %d started\n"),

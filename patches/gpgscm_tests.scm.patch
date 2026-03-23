@@ -1,5 +1,5 @@
 diff --git a/tests/gpgscm/tests.scm b/tests/gpgscm/tests.scm
-index 1e6d7fe..9317f03 100644
+index 486a77e..000d630 100644
 --- a/tests/gpgscm/tests.scm
 +++ b/tests/gpgscm/tests.scm
 @@ -114,11 +114,65 @@

@@ -1,8 +1,8 @@
 diff --git a/configure b/configure
-index aca916f..c037331 100755
+index 68cce49..c8d0305 100755
 --- a/configure
 +++ b/configure
-@@ -9207,7 +9207,7 @@ $as_echo "$as_me: WARNING:
+@@ -9183,7 +9183,7 @@ $as_echo "$as_me: WARNING:
  # FiXME: Use GNUPG_CHECK_LIBUSB and modify to use separate AC_SUBSTs.
  if test "$use_ccid_driver" = auto || test "$use_ccid_driver" = yes; then
     case "${host}" in
@@ -11,7 +11,7 @@ index aca916f..c037331 100755
         LIBUSB_NAME=
         LIBUSB_LIBS=
         LIBUSB_CPPFLAGS=
-@@ -14991,11 +14991,11 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+@@ -15119,11 +15119,11 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  #ifdef __cplusplus
  extern "C"
  #endif
