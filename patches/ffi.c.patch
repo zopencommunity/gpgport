@@ -1,5 +1,5 @@
 diff --git a/tests/gpgscm/ffi.c b/tests/gpgscm/ffi.c
-index 1179e01..83a6a45 100644
+index 8cfc929..cde1c2d 100644
 --- a/tests/gpgscm/ffi.c
 +++ b/tests/gpgscm/ffi.c
 @@ -53,6 +53,9 @@
