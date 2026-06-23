@@ -1,3 +1,5 @@
+[![CodeQL](https://github.com/zopencommunity/gpgport/actions/workflows/codeql.yml/badge.svg)](https://github.com/zopencommunity/gpgport/actions/workflows/codeql.yml)
+
 [![Automatic version updates](https://github.com/ZOSOpenTools/gpgport/actions/workflows/bump.yml/badge.svg)](https://github.com/ZOSOpenTools/gpgport/actions/workflows/bump.yml)
 
 # Gpg
