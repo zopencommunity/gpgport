@@ -60,6 +60,12 @@ standard-resolver
 EOF
 }
 
+zopen_post_install()
+{
+  # Delete the share/info/dir file if it exists
+  rm -f "$1/share/info/dir"
+}
+
 zopen_get_version()
 {
   echo "${GPG_VERSION}"
