@@ -16,6 +16,7 @@ export ZOPEN_EXTRA_LDFLAGS="-L\${ZLIB_HOME}/lib"
 export ZOPEN_EXTRA_LIBS="${ZOPEN_EXTRA_LIBS} -lz"
 export _EDC_SIG_DFLT=1
 export ZOPEN_INSTALL="zopen_install"
+export ZOPEN_RPM_NAME="gpg"
 
 zopen_check_results()
 {
